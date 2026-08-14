@@ -1,335 +1,938 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Project Cedar — INVRT close desk</title>
-  <style>
-    :root {
-      --bg: #0e1110;
-      --panel: #161a19;
-      --line: #2a312f;
-      --ink: #e8ebe6;
-      --dim: #8b948e;
-      --amber: #d4a017;
-      --live: #c45c26;
-      --ok: #3d9a6a;
-      --mono: "IBM Plex Mono", "SF Mono", ui-monospace, Menlo, monospace;
-      --sans: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
-    }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); }
-    button, input, textarea, select { font: inherit; color: inherit; }
-    button { cursor: pointer; }
-    .top {
-      display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: end;
-      padding: 16px 20px 12px; border-bottom: 1px solid var(--line);
-    }
-    .code { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--amber); text-transform: uppercase; }
-    h1 { font-size: 22px; font-weight: 600; margin: 2px 0 0; }
-    .clock { font-family: var(--mono); font-size: 28px; color: var(--amber); }
-    .clock span { display: block; font-size: 11px; color: var(--dim); letter-spacing: 0.08em; }
-    .stats { display: flex; gap: 18px; font-family: var(--mono); font-size: 12px; color: var(--dim); }
-    .stats b { color: var(--ink); font-size: 16px; }
-    nav { display: flex; gap: 4px; padding: 8px 20px; border-bottom: 1px solid var(--line); }
-    nav button { background: transparent; border: 0; color: var(--dim); padding: 8px 10px; }
-    nav button.on { color: var(--ink); box-shadow: inset 0 -2px 0 var(--amber); }
-    main { display: grid; grid-template-columns: 1.4fr 0.9fr; min-height: calc(100vh - 120px); }
-    @media (max-width: 960px) { main { grid-template-columns: 1fr; } .top { grid-template-columns: 1fr; } }
-    .blotter { border-right: 1px solid var(--line); }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { text-align: left; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); padding: 10px 12px; border-bottom: 1px solid var(--line); }
-    td { padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
-    tr.row { cursor: pointer; }
-    tr.row:hover { background: #1c2220; }
-    tr.row.on { background: #222826; }
-    .st { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
-    .st.open { color: var(--live); }
-    .st.agreed { color: var(--ok); }
-    .st.seller { color: var(--amber); }
-    .detail { padding: 16px 18px 80px; }
-    .detail h2 { font-size: 16px; margin: 0 0 8px; }
-    .muted { color: var(--dim); font-size: 13px; line-height: 1.45; }
-    label { display: block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); margin: 12px 0 4px; }
-    textarea, input { width: 100%; background: var(--bg); border: 1px solid var(--line); padding: 8px; }
-    textarea { min-height: 72px; }
-    .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .btns button, .ghost {
-      background: var(--panel); border: 1px solid var(--line); padding: 8px 12px;
-    }
-    .btns .go { background: var(--ok); border-color: var(--ok); color: #04150c; font-weight: 600; }
-    .btns .warn { background: var(--live); border-color: var(--live); color: #fff; }
-    .paper {
-      white-space: pre-wrap; font-family: var(--mono); font-size: 12px; line-height: 1.5;
-      background: #0a0c0b; border: 1px solid var(--line); padding: 16px; max-height: 70vh; overflow: auto;
-    }
-    .kpi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
-    .kpi div { background: var(--panel); border: 1px solid var(--line); padding: 10px; }
-    .kpi b { display: block; font-family: var(--mono); font-size: 18px; }
-    .warnbar { padding: 8px 20px; background: #2a1810; color: #e8c4a8; font-size: 12px; display: none; }
-    .phase { display: flex; gap: 6px; padding: 8px 20px 0; flex-wrap: wrap; }
-    .phase i { font-style: normal; font-size: 11px; padding: 4px 8px; border: 1px solid var(--line); color: var(--dim); }
-    .phase i.on { border-color: var(--amber); color: var(--amber); }
-    .phase i.done { color: var(--ok); border-color: #245c40; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#060F1C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Court Studio">
+<title>Padel-Craft · Court Studio v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+:root{
+  --n0:#060F1C;--n1:#0B1C30;--n2:#0F2540;--n3:#163050;--n4:#1E3D62;
+  --w:#fff;--w2:rgba(255,255,255,.86);--w3:rgba(255,255,255,.56);--w4:rgba(255,255,255,.26);--w5:rgba(255,255,255,.09);
+  --f:'Montserrat',sans-serif;
+  --amber:#E8C07A;--danger:#E8836F;--ok:#7FC4A0;--info:#8FB8E8;
+  --paper:#F4F1EA;--ink:#0B1C30;--mute:#5C6570;
+  --rail:72px;--panel:360px;--dock:88px;--top:56px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--n0);color:var(--w);font-family:var(--f);overflow:hidden}
+button{font-family:var(--f);cursor:pointer;appearance:none;-webkit-appearance:none;border:0;background:transparent;color:inherit}
+:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+
+header{position:fixed;top:0;left:0;right:0;z-index:30;height:var(--top);display:flex;align-items:center;gap:12px;
+  padding:0 14px 0 16px;background:linear-gradient(to bottom,rgba(6,15,28,.92),rgba(6,15,28,.55) 70%,transparent);
+  pointer-events:none}
+header > *{pointer-events:auto}
+.logo{display:flex;align-items:baseline;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.lp{font-weight:300;letter-spacing:.22em}.ls{color:var(--w4);margin:0 4px}.lc{font-weight:800}
+.tag{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--w3);border:1px solid var(--w5);
+  padding:5px 8px;border-radius:2px}
+.sp{flex:1}
+.chip{min-height:34px;padding:0 12px;border-radius:17px;border:1px solid var(--w4);color:var(--w2);font-size:11px;font-weight:700}
+.chip.on{background:var(--w);color:var(--n0);border-color:transparent}
+
+#view{position:fixed;inset:0;z-index:0}
+#view canvas{display:block;width:100%;height:100%}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 40%,transparent 40%,rgba(6,15,28,.45) 100%)}
+
+.rail{position:fixed;top:var(--top);left:0;bottom:var(--dock);z-index:20;width:var(--rail);padding:8px 8px 12px;
+  display:flex;flex-direction:column;gap:6px;background:linear-gradient(to right,rgba(6,15,28,.72),transparent)}
+.rail button{flex:1;max-height:88px;border-radius:12px;border:1px solid transparent;color:var(--w3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase}
+.rail button .n{font-size:15px;font-weight:800;letter-spacing:0;color:var(--w2)}
+.rail button.on{background:rgba(255,255,255,.1);border-color:var(--w5);color:var(--w)}
+.rail button.on .n{color:var(--w)}
+
+.panel{position:fixed;top:calc(var(--top) + 8px);right:12px;bottom:calc(var(--dock) + 10px);z-index:20;width:var(--panel);
+  background:rgba(11,28,48,.78);border:1px solid var(--w5);border-radius:16px;backdrop-filter:blur(16px);
+  display:flex;flex-direction:column;overflow:hidden}
+.panel h1{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1.15;padding:16px 16px 4px}
+.panel .lede{font-size:13px;color:var(--w3);padding:0 16px 12px;line-height:1.45}
+.opts{padding:0 12px;overflow:auto;flex:1}
+.opt{width:100%;text-align:left;border:1px solid var(--w5);background:rgba(6,15,28,.45);border-radius:12px;
+  padding:10px 12px;margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.opt:hover{border-color:var(--w4)}
+.opt.on{border-color:var(--w);background:rgba(255,255,255,.08)}
+.sw{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.2);flex:0 0 36px}
+.opt .t{font-size:13px;font-weight:700}
+.opt .m{font-size:11px;color:var(--w3);margin-top:2px;line-height:1.35}
+.opt .p{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);white-space:nowrap}
+.opt .p.carded{color:var(--ok)}
+.guide{margin:8px 12px 12px;background:var(--paper);color:var(--ink);border-radius:12px;padding:12px 14px}
+.guide .k{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-bottom:4px}
+.guide .t{font-size:14px;font-weight:800;margin-bottom:4px}
+.guide p{font-size:12.5px;line-height:1.45;color:#2a3540}
+
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:25;min-height:var(--dock);
+  padding:10px 16px max(12px,env(safe-area-inset-bottom));
+  background:linear-gradient(to top,rgba(6,15,28,.94),rgba(6,15,28,.7) 70%,transparent);
+  display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center}
+.dock .sent{font-size:14px;font-weight:600;line-height:1.3}
+.dock .sub{font-size:11px;color:var(--w3);margin-top:3px}
+.dock .eur{font-size:22px;font-weight:800;letter-spacing:-.03em;text-align:right;line-height:1}
+.dock .eur s{font-size:11px;font-weight:600;color:var(--w3);display:block;margin-top:3px;text-decoration:none;letter-spacing:.04em;text-transform:uppercase}
+.b{min-height:44px;padding:0 16px;border-radius:12px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--w);color:var(--n0)}
+.b.ghost{background:transparent;color:var(--w);border:1px solid var(--w4)}
+
+.views{position:fixed;left:calc(var(--rail) + 8px);bottom:calc(var(--dock) + 8px);z-index:18;display:flex;gap:6px}
+.views button{min-height:32px;padding:0 10px;border-radius:16px;border:1px solid var(--w5);background:rgba(11,28,48,.65);
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--w2)}
+.views button.on{background:var(--w);color:var(--n0);border-color:transparent}
+
+.sheet{display:none;position:fixed;inset:0;z-index:40;background:rgba(6,15,28,.88);padding:28px 4%;overflow:auto}
+.sheet.on{display:block}
+.paper{background:var(--paper);color:var(--ink);max-width:720px;margin:0 auto;padding:28px 32px;border-radius:4px}
+.paper h2{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.paper .note{font-size:13px;color:var(--mute);margin-bottom:16px;line-height:1.5}
+.paper table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0 18px}
+.paper th{text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);padding:8px 8px 8px 0;border-bottom:1px solid rgba(11,28,48,.2)}
+.paper td{padding:8px 8px 8px 0;border-bottom:1px solid rgba(11,28,48,.1)}
+.paper pre{white-space:pre-wrap;font-family:var(--f);font-size:13px;line-height:1.5;background:#fff;padding:12px;border-radius:4px}
+.rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.rowbtns .b{background:var(--ink);color:var(--paper)}
+.rowbtns .b.ghost{background:transparent;color:var(--ink);border:1px solid rgba(11,28,48,.25)}
+
+.toast{position:fixed;bottom:108px;left:50%;transform:translateX(-50%);z-index:50;display:none;
+  background:var(--w);color:var(--n0);padding:12px 18px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:4px}
+.toast.on{display:block}
+
+body.present .rail,body.present .panel,body.present header .chip.hide-p{display:none}
+body.present .dock{grid-template-columns:1fr auto}
+body.present .dock .eur{display:none}
+body.present .views{left:12px}
+
+@media(max-width:900px){
+  :root{--rail:0px;--panel:100%;--dock:96px}
+  .rail{top:auto;bottom:var(--dock);left:0;right:0;width:auto;height:56px;flex-direction:row;padding:6px;
+    background:rgba(6,15,28,.9)}
+  .rail button{max-height:none;font-size:8px}
+  .panel{top:auto;left:0;right:0;bottom:calc(var(--dock) + 56px);height:38%;width:auto;border-radius:16px 16px 0 0}
+  .views{left:8px;bottom:calc(var(--dock) + 64px)}
+  .dock{grid-template-columns:1fr auto}
+  .dock .eur{display:none}
+}
+</style>
 </head>
-<body onload="Desk.init()">
-  <div class="warnbar" id="gh">GitHub will not run this. Download product/deal-os/close-desk/index.html and open it locally.</div>
-  <header class="top">
-    <div>
-      <div class="code">INVRT · sell-side · 100% shares</div>
-      <h1>Project Cedar — Brennan Precision</h1>
-      <div class="muted">Helix Engineering buying. INVRT owns commercials. Counsel papers the SPA.</div>
-    </div>
-    <div class="clock" id="clock"></div>
-    <div class="stats" id="stats"></div>
-  </header>
-  <div class="phase" id="phase"></div>
-  <nav>
-    <button type="button" class="on" data-v="points" onclick="Desk.view('points')">Commercials</button>
-    <button type="button" data-v="model" onclick="Desk.view('model')">Model</button>
-    <button type="button" data-v="people" onclick="Desk.view('people')">People / ops</button>
-    <button type="button" data-v="paper" onclick="Desk.view('paper')">Paper</button>
-    <button type="button" data-v="close" onclick="Desk.view('close')">Close</button>
-  </nav>
-  <main>
-    <section class="blotter" id="left"></section>
-    <aside class="detail" id="right"></aside>
-  </main>
-  <script>
-    var Desk = {
-      key: "invrt-cedar-v1",
-      sel: "p1",
-      tab: "points",
-      seed: function () {
-        return {
-          day: 8,
-          daysTotal: 42,
-          points: [
-            { id: "p1", block: true, title: "Headline price", seller: "€48.0m cash-free debt-free on FY26E.", buyer: "€45.0m CFDD. Will not look at €48m without earn-out only.", agreed: "", status: "open" },
-            { id: "p2", block: true, title: "Locked box vs completion accounts", seller: "Locked box 31 Dec 2025. Ordinary course leakage only.", buyer: "Completion accounts. Do not trust locked box with family drawings.", agreed: "", status: "open" },
-            { id: "p3", block: true, title: "Earn-out", seller: "€5.0m over 2 years if EBITDA ≥ €6.5m. Reported EBITDA.", buyer: "€5.0m but adjusted EBITDA (add-backs they control). Hurdle €7.0m.", agreed: "", status: "open" },
-            { id: "p4", block: false, title: "Perimeter — factory vs family yard", seller: "Factory in OpCo is in. Adjacent yard stays in family PropCo; 10-year market lease.", buyer: "Want yard in the deal or a call option at close.", agreed: "", status: "open" },
-            { id: "p5", block: false, title: "Leakage / bonuses", seller: "FY26 accrued bonuses in ordinary course are not leakage.", buyer: "Any family bonus above prior-year run-rate is leakage.", agreed: "", status: "open" },
-            { id: "p6", block: true, title: "MD employment", seller: "Siobhán Brennan: 18 months MD, then 12 months advisory. Salary €220k.", buyer: "18 months OK. Want 6-month garden leave and buyer as employer.", agreed: "18-month MD; then 12-month advisory; employer = Helix; salary €220k. Garden leave still open under non-compete.", status: "seller" },
-            { id: "p7", block: false, title: "Non-compete", seller: "UK & Ireland, 18 months, precision components only.", buyer: "Worldwide, 24 months, industrials.", agreed: "", status: "open" },
-            { id: "p8", block: false, title: "Family recharges stop", seller: "Two recharges (€420k) cease at close.", buyer: "Agreed.", agreed: "Family recharges of €420k cease at close. No replacement service agreement unless Helix asks in writing.", status: "agreed" },
-            { id: "p9", block: false, title: "Group FD day 1", seller: "Accept buyer FD. Plant GM stays.", buyer: "Group FD day 1. No dual finance.", agreed: "Helix Group FD from completion. Plant GM retained. No dual FD.", status: "agreed" },
-            { id: "p10", block: false, title: "Exclusivity", seller: "Exclusivity through the 6-week close, then drops.", buyer: "Exclusivity to close or 8 weeks, whichever first.", agreed: "Exclusivity until the earlier of close or day 42 of this sprint.", status: "agreed" }
-          ],
-          cps: [
-            { id: "c1", title: "Commercials frozen (this blotter)", done: false },
-            { id: "c2", title: "Term sheet issued from agreed points — or written waiver to go straight to SPA", done: false },
-            { id: "c3", title: "Counsel pack sent (do not paper live points)", done: false },
-            { id: "c4", title: "SPA first draft from seller counsel", done: false },
-            { id: "c5", title: "MD employment agreed and in draft", done: false },
-            { id: "c6", title: "Disclosure letter process open", done: false },
-            { id: "c7", title: "Funds flow + debt payoff quotes", done: false },
-            { id: "c8", title: "Sign and complete", done: false }
-          ],
-          model: {
-            ebitda: 6.9,
-            netDebt: 4.1,
-            headline: 48,
-            earnout: 5
-          }
-        };
-      },
-      init: function () {
-        if (/github\.com|githubusercontent/.test(location.host)) document.getElementById("gh").style.display = "block";
-        try { this.d = JSON.parse(localStorage.getItem(this.key)) || this.seed(); }
-        catch (e) { this.d = this.seed(); }
-        if (!this.d.points) this.d = this.seed();
-        this.render();
-      },
-      save: function () { localStorage.setItem(this.key, JSON.stringify(this.d)); },
-      reset: function () { this.d = this.seed(); this.save(); this.sel = "p1"; this.render(); },
-      view: function (t) { this.tab = t; this.render(); },
-      pick: function (id) { this.sel = id; this.tab = "points"; this.render(); },
-      pt: function () { return this.d.points.filter(function (p) { return p.id === Desk.sel; })[0] || this.d.points[0]; },
-      n: function (st) { return this.d.points.filter(function (p) { return p.status === st; }).length; },
-      blockers: function () { return this.d.points.filter(function (p) { return p.block && p.status !== "agreed"; }); },
-      toast: function (m) { var n = document.getElementById("stats"); n.setAttribute("data-msg", m); },
-      write: function (field) {
-        var p = this.pt();
-        p[field] = document.getElementById("f-" + field).value;
-        this.save(); this.render();
-      },
-      setStatus: function (st) {
-        var p = this.pt();
-        p.status = st;
-        if (st === "agreed" && !p.agreed) p.agreed = p.seller;
-        this.save(); this.render();
-      },
-      agreeSeller: function () {
-        var p = this.pt();
-        p.agreed = p.seller;
-        p.status = "agreed";
-        this.save(); this.render();
-      },
-      agreeBuyer: function () {
-        var p = this.pt();
-        p.agreed = p.buyer;
-        p.status = "agreed";
-        this.save(); this.render();
-      },
-      toggleCp: function (id) {
-        this.d.cps.forEach(function (c) { if (c.id === id) c.done = !c.done; });
-        this.save(); this.render();
-      },
-      copyPaper: function (which) {
-        var t = which === "ts" ? this.ts() : this.counsel();
-        navigator.clipboard.writeText(t).then(function () { alert("Copied. Paste into Word / email."); }, function () {
-          prompt("Copy this:", t);
-        });
-      },
-      ts: function () {
-        var d = this.d;
-        var agreed = d.points.filter(function (p) { return p.status === "agreed"; });
-        var live = d.points.filter(function (p) { return p.status !== "agreed"; });
-        var lines = [];
-        lines.push("PROJECT CEDAR — HEADS OF TERMS (DRAFT FROM DEAL OS)");
-        lines.push("Sell-side · Brennan Precision Ltd → Helix Engineering Ltd · 100% shares");
-        lines.push("INVRT commercials. Not legal advice. Counsel to paper SPA.");
-        lines.push("Day " + d.day + " of " + d.daysTotal + ".");
-        lines.push("");
-        lines.push("AGREED — paper these");
-        agreed.forEach(function (p) { lines.push("• " + p.title + ": " + p.agreed); });
-        if (!agreed.length) lines.push("• None yet.");
-        lines.push("");
-        lines.push("STILL LIVE — do not paper, do not leak");
-        live.forEach(function (p) { lines.push("• " + p.title + " [seller] " + p.seller + " [buyer] " + p.buyer); });
-        if (this.blockers().length) {
-          lines.push("");
-          lines.push("BLOCKING A TERM SHEET: " + this.blockers().map(function (p) { return p.title; }).join("; "));
-        }
-        return lines.join("\n");
-      },
-      counsel: function () {
-        var d = this.d;
-        var agreed = d.points.filter(function (p) { return p.status === "agreed"; });
-        var live = d.points.filter(function (p) { return p.status !== "agreed"; });
-        return [
-          "COUNSEL PACK — PROJECT CEDAR",
-          "From: INVRT (commercials)",
-          "To: Seller counsel — paper SPA and MD employment from AGREED points only.",
-          "",
-          "Parties: Brennan Holdings Ltd (seller) / Brennan Precision Ltd (target) / Helix Engineering Ltd (buyer).",
-          "Deal: 100% share sale. Jurisdiction-agnostic drafting; INVRT will not litigate governing law.",
-          "",
-          "DOCUMENT THESE COMMERCIALS IN THE SPA / EMPLOYMENT:",
-          agreed.map(function (p) { return "• " + p.title + " — " + p.agreed; }).join("\n") || "• None agreed. Do not draft yet.",
-          "",
-          "DO NOT DRAFT AS CLOSED — still in commercial negotiation:",
-          live.map(function (p) { return "• " + p.title; }).join("\n") || "• None.",
-          "",
-          "Operating model to reflect: Helix Group FD from completion; plant GM retained; family recharges €420k off at close.",
-          "Model snapshot: FY26E EBITDA €" + d.model.ebitda + "m; net debt €" + d.model.netDebt + "m; headline €" + d.model.headline + "m; earn-out €" + d.model.earnout + "m."
-        ].join("\n");
-      },
-      render: function () {
-        var d = this.d;
-        document.getElementById("clock").innerHTML = d.day + " / " + d.daysTotal + "<span>days used / sprint</span>";
-        document.getElementById("stats").innerHTML =
-          "<div><b>" + this.n("open") + "</b> live</div><div><b>" + this.n("agreed") + "</b> agreed</div><div><b>" + this.blockers().length + "</b> blocking TS</div>";
-        var day = d.day;
-        document.getElementById("phase").innerHTML =
-          "<i class='" + (day <= 7 ? "on" : "done") + "'>W1 freeze price</i>" +
-          "<i class='" + (day > 7 && day <= 14 ? "on" : day > 14 ? "done" : "") + "'>W2 paper</i>" +
-          "<i class='" + (day > 14 && day <= 28 ? "on" : day > 28 ? "done" : "") + "'>W3–4 SPA / employment</i>" +
-          "<i class='" + (day > 28 ? "on" : "") + "'>W5–6 disclose · funds · close</i>";
-        document.querySelectorAll("nav button").forEach(function (b) {
-          b.className = b.getAttribute("data-v") === Desk.tab ? "on" : "";
-        });
-        if (this.tab === "points") this.renderPoints();
-        else if (this.tab === "model") this.renderModel();
-        else if (this.tab === "people") this.renderPeople();
-        else if (this.tab === "paper") this.renderPaper();
-        else this.renderClose();
-      },
-      renderPoints: function () {
-        var p = this.pt();
-        document.getElementById("left").innerHTML = "<table><thead><tr><th></th><th>Point</th><th>Seller</th><th>Buyer</th></tr></thead><tbody>" +
-          this.d.points.map(function (x) {
-            return "<tr class='row" + (x.id === Desk.sel ? " on" : "") + "' onclick=\"Desk.pick('" + x.id + "')\">" +
-              "<td class='st " + x.status + "'>" + x.status + (x.block && x.status !== "agreed" ? " · block" : "") + "</td>" +
-              "<td>" + x.title + "</td>" +
-              "<td class='muted'>" + x.seller.slice(0, 72) + (x.seller.length > 72 ? "…" : "") + "</td>" +
-              "<td class='muted'>" + x.buyer.slice(0, 72) + (x.buyer.length > 72 ? "…" : "") + "</td></tr>";
-          }).join("") + "</tbody></table>";
-        document.getElementById("right").innerHTML =
-          "<div class='code'>Work the point</div><h2>" + p.title + "</h2>" +
-          (p.block && p.status !== "agreed" ? "<p class='muted'>Blocks a term sheet until agreed.</p>" : "") +
-          "<label>Seller (INVRT / Brennan)</label><textarea id='f-seller'>" + p.seller.replace(/</g, "") + "</textarea>" +
-          "<label>Buyer (Helix)</label><textarea id='f-buyer'>" + p.buyer.replace(/</g, "") + "</textarea>" +
-          "<label>Agreed commercial (what counsel may paper)</label><textarea id='f-agreed'>" + (p.agreed || "").replace(/</g, "") + "</textarea>" +
-          "<div class='btns'>" +
-          "<button type='button' onclick=\"Desk.write('seller');Desk.write('buyer');Desk.write('agreed')\">Save</button>" +
-          "<button type='button' onclick='Desk.agreeSeller()'>Agree seller wording</button>" +
-          "<button type='button' onclick='Desk.agreeBuyer()'>Agree buyer wording</button>" +
-          "<button type='button' class='go' onclick=\"Desk.setStatus('agreed')\">Mark agreed</button>" +
-          "<button type='button' onclick=\"Desk.setStatus('open')\">Re-open</button>" +
-          "</div>" +
-          "<p class='muted' style='margin-top:16px'>Job: get this to agreed or kill it. Do not write a memo about it.</p>" +
-          "<div class='btns'><button type='button' class='ghost' onclick='Desk.reset()'>Reset sample deal</button></div>";
-      },
-      renderModel: function () {
-        var m = this.d.model;
-        var eq = (m.headline - m.netDebt).toFixed(1);
-        document.getElementById("left").innerHTML =
-          "<div class='detail'><p class='muted'>Numbers that feed the commercials. Not a replacement model. Change a driver, then go back to the point it affects.</p>" +
-          "<div class='kpi'><div><b>€" + m.ebitda + "m</b> FY26E EBITDA</div><div><b>€" + m.headline + "m</b> headline</div><div><b>€" + eq + "m</b> equity value (headline − net debt)</div></div>" +
-          "<label>FY26E EBITDA €m</label><input id='m-ebitda' value='" + m.ebitda + "'>" +
-          "<label>Net debt €m</label><input id='m-netDebt' value='" + m.netDebt + "'>" +
-          "<label>Headline €m</label><input id='m-headline' value='" + m.headline + "'>" +
-          "<label>Earn-out €m</label><input id='m-earnout' value='" + m.earnout + "'>" +
-          "<div class='btns'><button type='button' class='go' onclick='Desk.saveModel()'>Save into deal file</button></div>" +
-          "<p class='muted'>Locked box date in sample: 31 Dec 2025. INVRT fee 1.25% of equity value + 0.4% kicker.</p></div>";
-        document.getElementById("right").innerHTML =
-          "<h2>What the model is for</h2><p class='muted'>Helix argues €45m because they haircut FY26. Brennan’s table is €48m on €6.9m. Earn-out is the bridge. If headline moves, edit point “Headline price” so paper and model do not diverge.</p>" +
-          "<p class='muted'>Operating: recharges €0.42m off at close is already agreed. Do not double-count in EBITDA unless you reopen that point.</p>";
-      },
-      saveModel: function () {
-        this.d.model.ebitda = parseFloat(document.getElementById("m-ebitda").value);
-        this.d.model.netDebt = parseFloat(document.getElementById("m-netDebt").value);
-        this.d.model.headline = parseFloat(document.getElementById("m-headline").value);
-        this.d.model.earnout = parseFloat(document.getElementById("m-earnout").value);
-        this.save(); this.render();
-      },
-      renderPeople: function () {
-        document.getElementById("left").innerHTML =
-          "<div class='detail'><h2>Operating model</h2>" +
-          "<p><strong>Stay:</strong> Plant GM, quality lead, production system 18 months.</p>" +
-          "<p><strong>Change:</strong> Helix Group FD day 1. Family recharges off.</p>" +
-          "<p><strong>MD:</strong> Siobhán Brennan — 18-month MD then 12-month advisory. Garden leave / non-compete still live (points 6–7).</p>" +
-          "<p class='muted'>Employment is a commercial. Counsel drafts the contract from the agreed point, not from a side email.</p></div>";
-        document.getElementById("right").innerHTML =
-          "<h2>Who can kill the close</h2><p class='muted'>Siobhán (seller MD). Helix FD (buyer day-1 operator). Family on the yard. If employment or the yard is still live in week 5, the SPA will slip. Work those points now.</p>";
-      },
-      renderPaper: function () {
-        var block = this.blockers();
-        document.getElementById("left").innerHTML =
-          "<div class='detail'><h2>Term sheet (from blotter)</h2>" +
-          (block.length ? "<p class='muted'>Cannot honestly issue a TS while blocking points are live: " + block.map(function (p) { return p.title; }).join("; ") + ".</p>" : "<p class='muted'>No blocking points live. You may issue.</p>") +
-          "<div class='paper'>" + this.ts().replace(/</g, "&lt;") + "</div>" +
-          "<div class='btns'><button type='button' class='go' onclick=\"Desk.copyPaper('ts')\">Copy term sheet</button></div></div>";
-        document.getElementById("right").innerHTML =
-          "<h2>Counsel pack</h2><p class='muted'>This is what INVRT sends so lawyers do not invent commercials.</p>" +
-          "<div class='paper'>" + this.counsel().replace(/</g, "&lt;") + "</div>" +
-          "<div class='btns'><button type='button' class='go' onclick=\"Desk.copyPaper('counsel')\">Copy counsel pack</button>" +
-          "<button type='button' onclick=\"Desk.d.cps[2].done=true;Desk.save();Desk.view('close')\">Mark pack sent</button></div>";
-      },
-      renderClose: function () {
-        document.getElementById("left").innerHTML =
-          "<div class='detail'><h2>Six-week close</h2><p class='muted'>Tick only what is done. Do not add a programme office.</p><table>" +
-          this.d.cps.map(function (c) {
-            return "<tr class='row' onclick=\"Desk.toggleCp('" + c.id + "')\"><td class='st " + (c.done ? "agreed" : "open") + "'>" + (c.done ? "done" : "open") + "</td><td>" + c.title + "</td></tr>";
-          }).join("") + "</table></div>";
-        document.getElementById("right").innerHTML =
-          "<h2>How INVRT gets paid</h2><p class='muted'>Success 1.25% of equity value at close + 0.4% equity kicker. If commercials are not frozen, counsel cannot paper, and day 42 is a conversation not a completion.</p>" +
-          "<p class='muted'>Today is day " + this.d.day + ". Blocking TS points: " + this.blockers().length + ".</p>";
+<body>
+<header>
+  <div class="logo"><span class="lp">Padel</span><span class="ls">·</span><span class="lc">Craft</span></div>
+  <span class="tag">Court Studio v1</span>
+  <span class="tag" id="dealchip">Hotel F</span>
+  <div class="sp"></div>
+  <button class="chip hide-p" type="button" id="sitbtn">Where this sits</button>
+  <button class="chip" type="button" id="presentbtn">Present</button>
+  <a class="chip" href="mobile.html">OS</a>
+</header>
+
+<div id="view"></div>
+<div class="vignette"></div>
+
+<nav class="rail" id="rail"></nav>
+<aside class="panel">
+  <h1 id="ptitle"></h1>
+  <p class="lede" id="plede"></p>
+  <div class="opts" id="opts"></div>
+  <div class="guide" id="guide"></div>
+</aside>
+
+<div class="views" id="views"></div>
+
+<footer class="dock">
+  <div>
+    <div class="sent" id="sentence"></div>
+    <div class="sub" id="subline"></div>
+  </div>
+  <div class="eur" id="money"></div>
+  <button class="b" type="button" id="lockbtn">Lock spec</button>
+</footer>
+
+<div class="sheet" id="sitsheet">
+  <div class="paper">
+    <h2>Where Court Studio sits</h2>
+    <p class="note">This is a sales-floor module, not a tab in the founder OS. The OS is for decisions on the phone. This is for the call where the client is choosing what they are actually buying.</p>
+    <table>
+      <tr><th>Thing</th><th>Job</th><th>Who</th></tr>
+      <tr><td>Mobile OS</td><td>Queue, call, approve, chase cash</td><td>Founders, on the road</td></tr>
+      <tr><td>Dashboard</td><td>Monday desk, tenders, 180-court math</td><td>Founders + Carys</td></tr>
+      <tr><td><b>Court Studio</b></td><td>Build the court live, on screen, with the lead</td><td>Founder on a laptop or iPad, screen-shared</td></tr>
+      <tr><td>Sheet · Deals</td><td>The locked spec becomes SKU lines on the deal</td><td>Carys, after this call</td></tr>
+    </table>
+    <p class="note">V1 is the walk-through: project → model → look → glass &amp; light → lock. It uses the August rate card for outdoor / indoor extra / LED, and it does <b>not</b> invent prices for panoramic, Carbon or SonicShield. Those stay “founder prices” so nobody quotes a number that is not on the card.</p>
+    <p class="note">V2 (not this file): a unique link per lead so they can keep playing after the call, and “Lock spec” writes the SKU lines into the Sheet instead of copying text for Carys. V1 already puts the spec in the URL hash — send that link after the call and they see the same court.</p>
+    <div class="rowbtns"><button class="b" type="button" onclick="closeSheets()">Close</button></div>
+  </div>
+</div>
+
+<div class="sheet" id="locksheet">
+  <div class="paper" id="lockbody"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+/* ==========================================================================
+   Court Studio v1 — standalone sales module.
+   Does not live inside the founder OS. Output is a locked spec Carys pastes
+   onto the deal. August rate card only; upgrades are labelled founder-price.
+   ========================================================================== */
+
+const L = 20, W = 10, GH = 3, MH = 4;
+
+const DEALS = [
+  { id:"d-hf", account:"Hotel F", courts:1, setting:"hotel", enclosure:"outdoor" },
+  { id:"d-ch", account:"Club H expansion", courts:2, setting:"club", enclosure:"outdoor" },
+  { id:"d-cd", account:"Club D", courts:4, setting:"club", enclosure:"outdoor" },
+  { id:"d-hg", account:"Hotel group", courts:4, setting:"hotel", enclosure:"outdoor" },
+  { id:"d-la", account:"Local authority", courts:8, setting:"municipal", enclosure:"outdoor" },
+  { id:"new",  account:"Walk-in · new site", courts:2, setting:"club", enclosure:"outdoor" }
+];
+
+const MODELS = [
+  { id:"steel", name:"Steel", m:"Standard outdoor pack. 10mm glass, mesh sides. This is PC-OUT.",
+    glassMm:10, enclosure:"standard", post:0.1, say:"This is the court we already price. Mesh on the long sides, glass on the ends and the corners. If they just need to play, stop here.", card:"PC-OUT" },
+  { id:"vision", name:"Steel Vision", m:"Panoramic. 12mm glass all round, height-adjust posts.",
+    glassMm:12, enclosure:"panoramic", post:0.08, say:"Full glass on the sides. The hotel-terrace look — the bar can watch. 12mm. Panoramic is not on the August card; we lock the spec and a founder prices the upgrade.", card:"founder" },
+  { id:"technic", name:"Technic", m:"Super panoramic. Events, showcourts, the photograph.",
+    glassMm:12, enclosure:"super", post:0.06, say:"Super panoramic. Almost no mesh. This is the court they put on Instagram. Founder prices after spec lock — do not hide it inside a discount on PC-OUT.", card:"founder" },
+  { id:"carbon", name:"Carbon", m:"Super panoramic, carbon posts. Coast, roof, wind.",
+    glassMm:12, enclosure:"super", post:0.07, say:"Same silhouette as Technic, carbon structure. If this site is windy — coast or a rooftop — this is the conversation, not a cheaper steel frame.", card:"founder" }
+];
+
+const SURFACES = [
+  { id:"blue", name:"Tour blue", hex:"#1E4F9A", dark:"#163A72", say:"The colour most clubs photograph. Hides scuffs. Pair it with black or anthracite posts. GreenSet acrylic — colour from the live chart, not a special mix." },
+  { id:"green", name:"Club green", hex:"#1F6B4A", dark:"#164C35", say:"Reads as 'club' rather than 'tour'. Works against grass and trees. Same GreenSet system as blue." },
+  { id:"purple", name:"Night purple", hex:"#5A3D7A", dark:"#3E2A56", say:"Indoor and floodlit outdoor. Looks expensive at dusk. Warn them it shows dust more than blue." },
+  { id:"anth", name:"Anthracite", hex:"#2C3036", dark:"#1A1D21", say:"Hotel and city rooftop. The glass and the players become the colour. Extra-clear glass is worth it here." },
+  { id:"clay", name:"Clay", hex:"#C45C3E", dark:"#8F3E2A", say:"Resort and Mediterranean brief. Photographs warm. Not a clay court — still GreenSet acrylic." },
+  { id:"teal", name:"Teal", hex:"#0E6E6B", dark:"#0A4E4C", say:"A step off tour blue when the brand already owns navy. Confirm against the live GreenSet chart before locking." }
+];
+
+const GLASS = [
+  { id:"c10", name:"Clear 10mm", tint:0xffffff, op:0.18, mm:10, say:"Steel default. Fine for a standard outdoor pack.", card:"in-pack" },
+  { id:"c12", name:"Clear 12mm", tint:0xffffff, op:0.2, mm:12, say:"Vision / Technic / Carbon default. Stiffer, quieter, what a club expects on panoramic.", card:"in-pack" },
+  { id:"xc", name:"Extra-clear", tint:0xf2f7ff, op:0.12, mm:12, say:"Low-iron. The terrace stays visible from the bar. Worth it on hotels and anthracite surfaces. Founder prices.", card:"founder" },
+  { id:"grey", name:"Grey tint", tint:0x8aa0b8, op:0.28, mm:12, say:"Cuts glare on a west-facing court. Changes the photograph. Show it before they commit — some boards hate it.", card:"founder" },
+  { id:"sonic", name:"SonicShield", tint:0xcfe8ea, op:0.22, mm:12, say:"Acoustic glass. Neighbours, hotels, city infill. Looks like extra-clear with a cooler edge. Founder prices — do not guess dB on the call.", card:"founder" }
+];
+
+const STRUCTURE = [
+  { id:"black", name:"Black", hex:0x1a1a1a, say:"Default. Disappears. Lets the surface and the glass do the talking." },
+  { id:"anth", name:"Anthracite", hex:0x3a3f46, say:"Softer than black against a hotel facade or a pale render." },
+  { id:"white", name:"White", hex:0xe8e4dc, say:"Mediterranean, tennis-club adjacent. Shows dirt. Indoor halls only if they clean it." },
+  { id:"green", name:"Club green", hex:0x1a4a32, say:"Matches a green surface. Easy to overdo — keep glass extra-clear if you go here." },
+  { id:"sand", name:"Sand", hex:0xc4b49a, say:"Resort. Pair with clay or teal, not tour blue." }
+];
+
+const LIGHTS = [
+  { id:"none", name:"Daylight only", say:"Outdoor clubs that close at dusk. Not Ireland in winter. If they have any evening league, put the LED on.", sku:null },
+  { id:"led", name:"LED 300 lux", say:"The carded pack. Four corners, 300 lux. This is PC-LED at €8,000 a court.", sku:"PC-LED" },
+  { id:"event", name:"Event", say:"Showcourt, broadcast, Technic. Brighter than 300 lux. Founder prices — not the carded LED line.", sku:null, founder:true }
+];
+
+const SETTINGS = [
+  { id:"club", name:"Club grounds", say:"Grass, a low clubhouse, the usual Irish site. This is the default outdoor picture." },
+  { id:"hotel", name:"Hotel terrace", say:"Decking, a facade, people watching from inside. Push panoramic and extra-clear. Lighting is not optional." },
+  { id:"municipal", name:"Municipal / leisure", say:"Asphalt, a sports hall next door, budget in the room. Steel is usually the honest answer. Do not upsell Carbon to a council." },
+  { id:"indoor", name:"Indoor hall", say:"The hall is the architecture. Surface and light do more work than the model. Indoor extra is on the card: PC-IN at €14,000 a court." }
+];
+
+const STEPS = [
+  { id:"project", title:"This project", lede:"Who it is for, how many courts, indoor or outdoor. The 3D shows up to four — a twelve-court leisure job is the same spec, repeated." },
+  { id:"model", title:"The court", lede:"GreenSet’s four families. Steel is the outdoor pack on the card. Everything above it is a founder price after this call." },
+  { id:"look", title:"The look", lede:"Surface colour and post colour. GreenSet has 15+ in stock and will mix; these six are the ones we actually sell in Ireland." },
+  { id:"glass", title:"Glass & light", lede:"What they look through, and whether they can play after four. Say the line out loud before you click." },
+  { id:"spec", title:"Lock it", lede:"The spec is the product. Price is the card plus whatever a founder adds for panoramic, Carbon or SonicShield." }
+];
+
+const VIEWS = [
+  { id:"beauty", name:"Beauty" },
+  { id:"aerial", name:"Aerial" },
+  { id:"player", name:"Player" },
+  { id:"side", name:"Sideline" }
+];
+
+const CARD = { out:46000, inn:14000, led:8000 };
+
+const state = {
+  step:0, deal:"d-hf", courts:1, enclosure:"outdoor", setting:"hotel",
+  model:"vision", surface:"blue", glass:"xc", structure:"anth", lights:"led",
+  view:"beauty", present:false
+};
+
+function readHash(){
+  const q = new URLSearchParams((location.hash || "").replace(/^#/, ""));
+  ["deal","enclosure","setting","model","surface","glass","structure","lights","view"].forEach(k => {
+    if (q.has(k)) state[k] = q.get(k);
+  });
+  if (q.has("courts")) state.courts = Number(q.get("courts")) || state.courts;
+  if (q.has("step")) state.step = Math.max(0, Math.min(STEPS.length-1, Number(q.get("step"))||0));
+  if (q.get("present") === "1") state.present = true;
+}
+function writeHash(){
+  const q = new URLSearchParams();
+  ["deal","courts","enclosure","setting","model","surface","glass","structure","lights","step","view"].forEach(k => q.set(k, state[k]));
+  if (state.present) q.set("present","1");
+  history.replaceState(null, "", "#" + q.toString());
+}
+
+let scene, camera, renderer, controls, world, courtsGroup, sun, hemi, spots = [];
+let meshTex;
+
+function deal(){ return DEALS.find(d => d.id === state.deal) || DEALS[0]; }
+function model(){ return MODELS.find(m => m.id === state.model); }
+function surface(){ return SURFACES.find(s => s.id === state.surface); }
+function glass(){ return GLASS.find(g => g.id === state.glass); }
+function structure(){ return STRUCTURE.find(s => s.id === state.structure); }
+function light(){ return LIGHTS.find(l => l.id === state.lights); }
+function setting(){ return SETTINGS.find(s => s.id === state.setting); }
+function shown(){ return Math.min(state.courts, 4); }
+
+function pricing(){
+  const n = state.courts;
+  const lines = [{ sku:"PC-OUT", name:"Outdoor court · GreenSet supply & install", qty:n, each:CARD.out }];
+  if (state.enclosure === "indoor") lines.push({ sku:"PC-IN", name:"Indoor / covered extra", qty:n, each:CARD.inn });
+  if (light().sku === "PC-LED") lines.push({ sku:"PC-LED", name:"LED lighting 300 lux", qty:n, each:CARD.led });
+  const card = lines.reduce((a,l) => a + l.qty * l.each, 0);
+  const founder = [];
+  if (model().card === "founder") founder.push(model().name + " vs Steel");
+  if (glass().card === "founder") founder.push(glass().name);
+  if (light().founder) founder.push("Event lighting");
+  return { lines, card, founder };
+}
+
+function sentence(){
+  const n = state.courts;
+  const place = state.enclosure === "indoor" ? "indoor" : setting().name.toLowerCase();
+  return n + (n===1?" court":" courts") + " · " + model().name + " · " + surface().name + " · " + glass().name + " · " + structure().name + " posts";
+}
+
+/* ----------------------------------------------- 3D -------------------------------- */
+
+function init3d(){
+  const host = document.getElementById("view");
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 400);
+  renderer = new THREE.WebGLRenderer({ antialias:true, alpha:false });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  host.appendChild(renderer.domElement);
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.minDistance = 8;
+  controls.maxDistance = 90;
+  controls.maxPolarAngle = Math.PI * 0.49;
+  controls.target.set(0, 1.2, 0);
+
+  hemi = new THREE.HemisphereLight(0xb8c8e0, 0x3a2a18, 0.7);
+  scene.add(hemi);
+  sun = new THREE.DirectionalLight(0xffe6c4, 1.4);
+  sun.position.set(-18, 22, 12);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.camera.near = 2;
+  sun.shadow.camera.far = 80;
+  sun.shadow.camera.left = -30;
+  sun.shadow.camera.right = 30;
+  sun.shadow.camera.top = 30;
+  sun.shadow.camera.bottom = -30;
+  scene.add(sun);
+
+  meshTex = makeMeshTexture();
+  buildWorld();
+  setView(state.view);
+  addEvents();
+  loop();
+}
+
+function makeMeshTexture(){
+  const c = document.createElement("canvas");
+  c.width = 128; c.height = 128;
+  const x = c.getContext("2d");
+  x.clearRect(0,0,128,128);
+  x.strokeStyle = "rgba(220,220,220,.9)";
+  x.lineWidth = 2;
+  for (let i=0;i<=128;i+=10){
+    x.beginPath(); x.moveTo(i,0); x.lineTo(i,128); x.stroke();
+    x.beginPath(); x.moveTo(0,i); x.lineTo(128,i); x.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = 8;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.repeat.set(10, 4);
+  return t;
+}
+
+function disposeGroup(g){
+  if (!g) return;
+  g.traverse(o => {
+    if (o.geometry) o.geometry.dispose();
+    if (o.material) {
+      const ms = Array.isArray(o.material) ? o.material : [o.material];
+      ms.forEach(m => { if (m.map && m.map !== meshTex) m.map.dispose(); m.dispose(); });
+    }
+  });
+  scene.remove(g);
+}
+
+function buildWorld(){
+  disposeGroup(world);
+  disposeGroup(courtsGroup);
+  spots.forEach(s => scene.remove(s));
+  spots = [];
+  world = new THREE.Group();
+  courtsGroup = new THREE.Group();
+
+  const indoor = state.enclosure === "indoor";
+  const set = state.setting;
+  scene.background = new THREE.Color(indoor ? 0x12151c : set === "hotel" ? 0x1a2230 : set === "municipal" ? 0x4a5560 : 0x6a8498);
+  scene.fog = new THREE.Fog(scene.background, indoor ? 28 : 40, indoor ? 70 : 110);
+  hemi.color.set(indoor ? 0xd8dde8 : 0xc5d4e8);
+  hemi.groundColor.set(indoor ? 0x2a2a2a : 0x4a3a28);
+  sun.color.set(indoor ? 0xf2f2f0 : 0xffe6c4);
+  sun.intensity = indoor ? 0.55 : (light().id === "none" ? 1.55 : 0.85);
+  sun.position.set(indoor ? 8 : -18, indoor ? 16 : 22, indoor ? 4 : 12);
+
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(120, 120),
+    new THREE.MeshStandardMaterial({
+      color: indoor ? 0x2a2d33 : set === "hotel" ? 0x6b5340 : set === "municipal" ? 0x6a6e72 : 0x3d5a3a,
+      roughness: 0.95
+    })
+  );
+  ground.rotation.x = -Math.PI/2;
+  ground.receiveShadow = true;
+  world.add(ground);
+
+  const n = shown();
+  if (indoor) addHall(world, n);
+  else addSiteDressing(world, set);
+
+  const gap = 12;
+  const originZ = -((n-1) * gap) / 2;
+  for (let i=0;i<n;i++){
+    const c = buildCourt();
+    c.position.z = originZ + i * gap;
+    courtsGroup.add(c);
+  }
+  world.add(courtsGroup);
+  scene.add(world);
+  applyLights();
+}
+
+function addHall(g, n){
+  const depth = Math.max(36, (n-1)*12 + 18);
+  const mat = new THREE.MeshStandardMaterial({ color:0x2c313a, roughness:0.9, side:THREE.BackSide });
+  const hall = new THREE.Mesh(new THREE.BoxGeometry(48, 14, depth), mat);
+  hall.position.y = 7;
+  g.add(hall);
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(46, 0.2, depth-2), new THREE.MeshStandardMaterial({ color:0x3a3f46, roughness:0.8 }));
+  floor.position.y = 0.1;
+  floor.receiveShadow = true;
+  g.add(floor);
+}
+
+function addSiteDressing(g, set){
+  const wall = new THREE.MeshStandardMaterial({ color: set==="hotel" ? 0xcfc6b8 : set==="municipal" ? 0x8a9096 : 0xd8d2c6, roughness:0.85 });
+  const b = new THREE.Mesh(new THREE.BoxGeometry(set==="hotel"?28:18, set==="hotel"?10:5, 6), wall);
+  b.position.set(-22, set==="hotel"?5:2.5, -16);
+  b.castShadow = true;
+  g.add(b);
+  if (set === "hotel") {
+    const win = new THREE.Mesh(new THREE.BoxGeometry(26, 3.2, 0.2), new THREE.MeshStandardMaterial({ color:0x8ab0c8, emissive:0x223344, roughness:0.2 }));
+    win.position.set(-22, 6, -12.9);
+    g.add(win);
+  }
+  const treeMat = new THREE.MeshStandardMaterial({ color:0x2d5a32, roughness:1 });
+  const trunk = new THREE.MeshStandardMaterial({ color:0x4a3220, roughness:1 });
+  for (let i=0;i<6;i++){
+    const x = 16 + (i%3)*4, z = -18 + Math.floor(i/3)*8;
+    const t = new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.22,1.6,6), trunk);
+    t.position.set(x, 0.8, z); t.castShadow = true; g.add(t);
+    const leaf = new THREE.Mesh(new THREE.SphereGeometry(1.4, 8, 6), treeMat);
+    leaf.position.set(x, 2.4, z); leaf.castShadow = true; g.add(leaf);
+  }
+}
+
+function glassMat(){
+  const spec = glass();
+  const thick = spec.mm >= 12 ? 0.024 : 0.018;
+  return new THREE.MeshPhysicalMaterial({
+    color: spec.tint, metalness:0, roughness:0.03, transmission:0.86,
+    thickness: thick * 12, ior:1.5, transparent:true, opacity:1,
+    envMapIntensity:1.2, side:THREE.DoubleSide, depthWrite:false
+  });
+}
+function paneT(){ return glass().mm >= 12 ? 0.024 : 0.018; }
+function postMat(){
+  return new THREE.MeshStandardMaterial({ color: structure().hex, metalness:0.7, roughness: model().id==="carbon"?0.45:0.28 });
+}
+function fenceMat(){
+  return new THREE.MeshStandardMaterial({
+    map: meshTex, color: structure().hex, metalness:0.5, roughness:0.4,
+    transparent:true, opacity:0.78, side:THREE.DoubleSide, depthWrite:false
+  });
+}
+
+function buildCourt(){
+  const g = new THREE.Group();
+  const mdl = model();
+  const surf = surface();
+  const postW = mdl.post;
+
+  const slab = new THREE.Mesh(new THREE.BoxGeometry(L+0.4, 0.12, W+0.4),
+    new THREE.MeshStandardMaterial({ color: surf.dark, roughness:0.7 }));
+  slab.position.y = 0.06; slab.receiveShadow = true; slab.castShadow = true; g.add(slab);
+
+  const play = new THREE.Mesh(new THREE.BoxGeometry(L-0.08, 0.02, W-0.08),
+    new THREE.MeshStandardMaterial({ color: surf.hex, roughness:0.62 }));
+  play.position.y = 0.13; play.receiveShadow = true; g.add(play);
+
+  addLines(g);
+  addNet(g);
+
+  const posts = postMat();
+  const gl = glassMat();
+  const fence = fenceMat();
+
+  // End walls at x = ±10
+  [-1,1].forEach(sign => {
+    addEndWall(g, sign * L/2, mdl, gl, fence, posts, postW);
+  });
+  // Side walls at z = ±5
+  [-1,1].forEach(sign => {
+    addSideWall(g, sign * W/2, mdl, gl, fence, posts, postW, sign);
+  });
+
+  // Corner posts extra
+  [[-L/2,-W/2],[L/2,-W/2],[-L/2,W/2],[L/2,W/2]].forEach(([x,z]) => {
+    const p = new THREE.Mesh(new THREE.BoxGeometry(postW*1.2, MH, postW*1.2), posts);
+    p.position.set(x, MH/2, z); p.castShadow = true; g.add(p);
+  });
+
+  // LED bars
+  if (light().id !== "none") {
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, W+0.4),
+      new THREE.MeshStandardMaterial({ color:0x222, metalness:0.6, roughness:0.3,
+        emissive: light().id==="event" ? 0xfff4d6 : 0xe8f0ff, emissiveIntensity: light().id==="event"?1.4:0.7 }));
+    [-1,1].forEach(s => {
+      const b = bar.clone();
+      b.position.set(s*(L/2 + 0.15), MH + 0.2, 0);
+      g.add(b);
+    });
+  }
+  return g;
+}
+
+function addLines(g){
+  const mat = new THREE.MeshStandardMaterial({ color:0xf4f1ea, roughness:0.45 });
+  const y = 0.145, t = 0.05;
+  function box(sx, sz, x, z){
+    const m = new THREE.Mesh(new THREE.BoxGeometry(sx, t, sz), mat);
+    m.position.set(x, y, z); g.add(m);
+  }
+  box(L, t, 0,  W/2);   // sidelines
+  box(L, t, 0, -W/2);
+  box(t, W,  L/2, 0);   // baselines
+  box(t, W, -L/2, 0);
+  box(t, W, 0, 0);      // under the net
+  box(t, W,  3, 0);     // service lines (3m from net)
+  box(t, W, -3, 0);
+  box(3, t,  1.5, 0);   // centre service
+  box(3, t, -1.5, 0);
+}
+
+function addNet(g){
+  const post = new THREE.MeshStandardMaterial({ color:0x111, metalness:0.4, roughness:0.5 });
+  [-W/2, W/2].forEach(z => {
+    const p = new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.92,8), post);
+    p.position.set(0, 0.46, z); g.add(p);
+  });
+  const net = new THREE.Mesh(new THREE.PlaneGeometry(W-0.1, 0.82),
+    new THREE.MeshStandardMaterial({ color:0x222, transparent:true, opacity:0.55, side:THREE.DoubleSide }));
+  net.position.set(0, 0.46, 0); net.rotation.y = Math.PI/2; g.add(net);
+  const tape = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, W-0.08), new THREE.MeshStandardMaterial({ color:0xf4f1ea }));
+  tape.position.set(0, 0.88, 0); g.add(tape);
+}
+
+function addEndWall(g, x, mdl, gl, fence, posts, postW){
+  const n = 5, pw = W / n;
+  for (let i=0;i<n;i++){
+    const z = -W/2 + pw/2 + i*pw;
+    const pane = new THREE.Mesh(new THREE.BoxGeometry(paneT(), GH - 0.08, pw - 0.06), gl);
+    pane.position.set(x, GH/2, z); g.add(pane);
+    if (i) {
+      const p = new THREE.Mesh(new THREE.BoxGeometry(postW, GH, postW), posts);
+      p.position.set(x, GH/2, -W/2 + i*pw); p.castShadow = true; g.add(p);
+    }
+  }
+  const beam = new THREE.Mesh(new THREE.BoxGeometry(postW*1.1, 0.08, W), posts);
+  beam.position.set(x, GH, 0); g.add(beam);
+  if (mdl.enclosure !== "super") {
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(W, MH - GH), fence);
+    mesh.position.set(x + (x>0?0.03:-0.03), GH + (MH-GH)/2, 0);
+    mesh.rotation.y = Math.PI/2;
+    g.add(mesh);
+    const top = new THREE.Mesh(new THREE.BoxGeometry(postW, 0.06, W), posts);
+    top.position.set(x, MH, 0); g.add(top);
+  } else {
+    const extra = new THREE.Mesh(new THREE.BoxGeometry(paneT(), MH - GH, W - 0.1), gl);
+    extra.position.set(x, GH + (MH-GH)/2, 0); g.add(extra);
+    const top = new THREE.Mesh(new THREE.BoxGeometry(postW, 0.06, W), posts);
+    top.position.set(x, MH, 0); g.add(top);
+  }
+}
+
+function addSideWall(g, z, mdl, gl, fence, posts, postW, sign){
+  const panoramic = mdl.enclosure !== "standard";
+  const wing = 2; // metres of glass from each end on Steel
+  if (panoramic) {
+    const n = 10, pw = L / n;
+    for (let i=0;i<n;i++){
+      const x = -L/2 + pw/2 + i*pw;
+      const pane = new THREE.Mesh(new THREE.BoxGeometry(pw - 0.06, GH - 0.08, paneT()), gl);
+      pane.position.set(x, GH/2, z); g.add(pane);
+      if (i) {
+        const p = new THREE.Mesh(new THREE.BoxGeometry(postW, GH, postW), posts);
+        p.position.set(-L/2 + i*pw, GH/2, z); p.castShadow = true; g.add(p);
       }
-    };
-  </script>
+    }
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(L, 0.08, postW*1.1), posts);
+    beam.position.set(0, GH, z); g.add(beam);
+    if (mdl.enclosure === "panoramic") {
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(L, MH - GH), fence);
+      mesh.position.set(0, GH + (MH-GH)/2, z + sign*0.03);
+      g.add(mesh);
+    } else {
+      const extra = new THREE.Mesh(new THREE.BoxGeometry(L - 0.1, MH - GH, paneT()), gl);
+      extra.position.set(0, GH + (MH-GH)/2, z); g.add(extra);
+    }
+    const top = new THREE.Mesh(new THREE.BoxGeometry(L, 0.06, postW), posts);
+    top.position.set(0, MH, z); g.add(top);
+  } else {
+    // glass wings
+    [-1,1].forEach(dir => {
+      const x = dir * (L/2 - wing/2);
+      const pane = new THREE.Mesh(new THREE.BoxGeometry(wing - 0.06, GH - 0.08, paneT()), gl);
+      pane.position.set(x, GH/2, z); g.add(pane);
+      const p = new THREE.Mesh(new THREE.BoxGeometry(postW, GH, postW), posts);
+      p.position.set(dir * (L/2 - wing), GH/2, z); p.castShadow = true; g.add(p);
+    });
+    const mid = L - 2*wing;
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(mid, MH), fence);
+    mesh.position.set(0, MH/2, z + sign*0.03);
+    g.add(mesh);
+    const top = new THREE.Mesh(new THREE.BoxGeometry(L, 0.06, postW), posts);
+    top.position.set(0, MH, z); g.add(top);
+  }
+}
+
+function applyLights(){
+  spots.forEach(s => scene.remove(s));
+  spots = [];
+  const mode = light().id;
+  if (mode === "none") return;
+  const n = shown();
+  const gap = 12;
+  const originZ = -((n-1)*gap)/2;
+  const intense = mode === "event" ? 18 : 9;
+  const col = mode === "event" ? 0xfff1d0 : 0xe8f2ff;
+  for (let i=0;i<n;i++){
+    const z0 = originZ + i*gap;
+    [[-L/2, W/2],[L/2, W/2],[-L/2,-W/2],[L/2,-W/2]].forEach(([x,z]) => {
+      const s = new THREE.SpotLight(col, intense, 28, 0.55, 0.45, 1.1);
+      s.position.set(x * 0.92, MH + 1.2, z0 + z * 0.92);
+      s.target.position.set(0, 0, z0);
+      s.castShadow = i === 0;
+      scene.add(s); scene.add(s.target); spots.push(s, s.target);
+    });
+  }
+}
+
+function setView(id){
+  state.view = id;
+  const n = shown();
+  const looks = {
+    beauty:  { p:[22, 11, 18], t:[0, 1.2, 0] },
+    aerial:  { p:[2, 28, 8], t:[0, 0, 0] },
+    player:  { p:[-12.5, 1.65, 0.4], t:[4, 1.1, 0] },
+    side:    { p:[0, 3.2, 16 + n], t:[0, 1.4, 0] }
+  };
+  const v = looks[id] || looks.beauty;
+  camera.position.set(...v.p);
+  controls.target.set(...v.t);
+  controls.autoRotate = id === "beauty";
+  controls.autoRotateSpeed = 0.6;
+  renderViews();
+  writeHash();
+}
+
+function loop(){
+  requestAnimationFrame(loop);
+  controls.autoRotate = state.view === "beauty";
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+function addEvents(){
+  addEventListener("resize", () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+  addEventListener("keydown", e => {
+    if (e.key === "ArrowRight" || e.key === "]") { state.step = Math.min(STEPS.length-1, state.step+1); renderUI(); }
+    if (e.key === "ArrowLeft" || e.key === "[") { state.step = Math.max(0, state.step-1); renderUI(); }
+    if (e.key === "p") togglePresent();
+  });
+}
+
+/* ----------------------------------------------- UI -------------------------------- */
+
+function renderUI(){
+  document.getElementById("dealchip").textContent = deal().account;
+  document.body.classList.toggle("present", state.present);
+  document.getElementById("presentbtn").textContent = state.present ? "Exit present" : "Present";
+  document.getElementById("presentbtn").classList.toggle("on", state.present);
+  renderRail();
+  renderPanel();
+  renderDock();
+  renderViews();
+  writeHash();
+}
+
+function renderRail(){
+  document.getElementById("rail").innerHTML = STEPS.map((s,i) =>
+    `<button type="button" class="${i===state.step?"on":""}" data-step="${i}"><span class="n">${i+1}</span>${s.id}</button>`
+  ).join("");
+}
+
+function renderViews(){
+  document.getElementById("views").innerHTML = VIEWS.map(v =>
+    `<button type="button" class="${state.view===v.id?"on":""}" data-view="${v.id}">${v.name}</button>`
+  ).join("");
+}
+
+function renderPanel(){
+  const step = STEPS[state.step];
+  document.getElementById("ptitle").textContent = step.title;
+  document.getElementById("plede").textContent = step.lede;
+  const opts = document.getElementById("opts");
+  opts.innerHTML = optionsFor(step.id);
+  document.getElementById("guide").innerHTML = guideHTML();
+}
+
+function sw(hex){
+  const h = typeof hex === "number" ? "#" + hex.toString(16).padStart(6,"0") : hex;
+  return `<span class="sw" style="background:${h}"></span>`;
+}
+
+function opt(id, on, swatch, title, meta, price){
+  return `<button type="button" class="opt ${on?"on":""}" data-pick="${id}">
+    ${swatch || "<span class='sw' style='background:transparent;border:0'></span>"}
+    <span><div class="t">${title}</div><div class="m">${meta}</div></span>
+    <span class="p ${price==="On the card"?"carded":""}">${price||""}</span>
+  </button>`;
+}
+
+function optionsFor(id){
+  if (id === "project") {
+    return DEALS.map(d => opt("deal:"+d.id, state.deal===d.id, "", d.account, d.courts+" court"+(d.courts>1?"s":"")+" · "+d.setting, "")).join("")
+      + `<p class="lede" style="padding:8px 4px 4px">How many, and where they sit</p>`
+      + [1,2,4,6,8].map(n => opt("courts:"+n, state.courts===n, "", n+" court"+(n>1?"s":""), n>4 ? "Showing 4 on screen, spec is for "+n : "On screen", "")).join("")
+      + SETTINGS.map(s => opt("set:"+s.id, state.setting===s.id && (s.id==="indoor"?state.enclosure==="indoor":state.enclosure==="outdoor"),
+        "", s.name, s.id==="indoor"?"Adds PC-IN on the card":"Outdoor picture", s.id==="indoor"?"On the card":"")).join("");
+  }
+  if (id === "model") {
+    return MODELS.map(m => opt("model:"+m.id, state.model===m.id, "", m.name, m.m, m.card==="PC-OUT"?"On the card":"Founder price")).join("");
+  }
+  if (id === "look") {
+    return SURFACES.map(s => opt("surf:"+s.id, state.surface===s.id, sw(s.hex), s.name, "GreenSet acrylic", "")).join("")
+      + `<p class="lede" style="padding:8px 4px 4px">Structure colour</p>`
+      + STRUCTURE.map(s => opt("str:"+s.id, state.structure===s.id, sw(s.hex), s.name, "", "")).join("");
+  }
+  if (id === "glass") {
+    return GLASS.map(g => opt("glass:"+g.id, state.glass===g.id, "", g.name, g.mm+"mm", g.card==="founder"?"Founder price":"In the pack")).join("")
+      + `<p class="lede" style="padding:8px 4px 4px">Light</p>`
+      + LIGHTS.map(l => opt("light:"+l.id, state.lights===l.id, "", l.name, l.sku==="PC-LED"?"PC-LED · €8,000 / court": (l.founder?"Not on the August card":"No evening play"), l.sku?"On the card": (l.founder?"Founder price":""))).join("");
+  }
+  if (id === "spec") {
+    const p = pricing();
+    const rows = p.lines.map(l => `<tr><td>${l.sku}</td><td>${l.name}</td><td>${l.qty}</td><td>€${(l.qty*l.each).toLocaleString("en-IE")}</td></tr>`).join("");
+    return `<div class="guide" style="margin:0 0 12px">
+      <div class="k">On the August rate card</div>
+      <table style="width:100%;font-size:12px;margin-top:8px">${rows}
+      <tr><td colspan="3"><b>Card total</b></td><td><b>€${p.card.toLocaleString("en-IE")}</b></td></tr></table>
+      ${p.founder.length ? `<p style="margin-top:8px">Not on the card — founder prices after this call: ${p.founder.join("; ")}.</p>` : `<p style="margin-top:8px">No upgrades. This is the outdoor pack as priced.</p>`}
+    </div>
+    <button class="b" type="button" id="lockbtn2" style="width:100%">Lock spec for Carys</button>`;
+  }
+  return "";
+}
+
+function guideHTML(){
+  const step = STEPS[state.step].id;
+  let item = model();
+  if (step === "project") item = setting();
+  if (step === "look") item = surface();
+  if (step === "glass") item = glass();
+  if (step === "spec") item = { name:"What you say", say:"Lock the spec out loud. Then a founder prices anything not on the card. Do not discount PC-OUT to hide panoramic." };
+  return `<div class="k">Say this</div><div class="t">${item.name}</div><p>${item.say}</p>`;
+}
+
+function renderDock(){
+  const p = pricing();
+  document.getElementById("sentence").textContent = sentence();
+  const extra = p.founder.length ? " · " + p.founder.join(", ") + " not on the card" : "";
+  document.getElementById("subline").textContent = deal().account + " · " + (state.enclosure==="indoor"?"indoor":"outdoor") + extra;
+  document.getElementById("money").innerHTML = "€" + Math.round(p.card/1000) + "k<s>card" + (p.founder.length?" + founder":"") + "</s>";
+}
+
+function pick(raw){
+  const [k,v] = raw.split(":");
+  if (k==="deal") {
+    const d = DEALS.find(x => x.id===v);
+    state.deal = v; state.courts = d.courts; state.setting = d.setting;
+    state.enclosure = d.enclosure;
+    if (d.setting==="hotel") { state.model="vision"; state.glass="xc"; state.structure="anth"; state.lights="led"; }
+    if (d.setting==="municipal") { state.model="steel"; state.glass="c10"; state.structure="black"; }
+    if (d.setting==="club") { state.model="steel"; state.glass="c12"; }
+  }
+  if (k==="courts") state.courts = Number(v);
+  if (k==="set") {
+    state.setting = v;
+    state.enclosure = v==="indoor" ? "indoor" : "outdoor";
+    if (v==="indoor") state.lights = state.lights==="none" ? "led" : state.lights;
+  }
+  if (k==="model") {
+    state.model = v;
+    const m = MODELS.find(x => x.id===v);
+    if (m.glassMm===10 && glass().mm===12 && state.glass==="c12") state.glass = "c10";
+    if (m.glassMm===12 && state.glass==="c10") state.glass = "c12";
+  }
+  if (k==="surf") state.surface = v;
+  if (k==="str") state.structure = v;
+  if (k==="glass") state.glass = v;
+  if (k==="light") state.lights = v;
+  buildWorld();
+  renderUI();
+}
+
+function specText(){
+  const p = pricing();
+  const lines = p.lines.map(l => l.sku + "\t" + l.name + "\t" + l.qty + "\t€" + l.each.toLocaleString("en-IE") + "\t€" + (l.qty*l.each).toLocaleString("en-IE")).join("\n");
+  return `Padel-Craft · court spec v1
+Account: ${deal().account}
+Setting: ${setting().name}
+Courts: ${state.courts} ${state.enclosure}
+Model: ${model().name} (${model().enclosure}, ${model().glassMm}mm)
+Surface: ${surface().name} · GreenSet acrylic
+Glass: ${glass().name}
+Structure: ${structure().name}
+Lighting: ${light().name}
+
+On the August rate card
+${lines}
+Card total\t€${p.card.toLocaleString("en-IE")}
+
+Not on the card — founder prices
+${p.founder.length ? p.founder.join("\n") : "None. This is the outdoor pack as priced."}
+
+Route: Carys locks the spec on the deal. Founders price anything not on the card. Do not discount PC-OUT to hide an upgrade.`;
+}
+
+function openLock(){
+  const p = pricing();
+  const rows = p.lines.map(l => `<tr><td>${l.sku}</td><td>${l.name}</td><td>${l.qty}</td><td>€${l.each.toLocaleString("en-IE")}</td><td>€${(l.qty*l.each).toLocaleString("en-IE")}</td></tr>`).join("");
+  document.getElementById("lockbody").innerHTML = `
+    <h2>Locked spec · ${deal().account}</h2>
+    <p class="note">${sentence()}. ${state.enclosure==="indoor"?"Indoor extra is on the card.":"Outdoor."} Copy this for Carys — v1 does not write the Sheet yet.</p>
+    <table>
+      <tr><th>SKU</th><th>Line</th><th>Qty</th><th>Each</th><th>Card</th></tr>
+      ${rows}
+      <tr><td colspan="4"><b>Card total</b></td><td><b>€${p.card.toLocaleString("en-IE")}</b></td></tr>
+    </table>
+    <p class="note">${p.founder.length ? "Founder prices still needed: <b>" + p.founder.join(", ") + "</b>. Do not hide these inside a discount on PC-OUT." : "No upgrades off the card. Carys can run the standard pack."}</p>
+    <pre id="specpre">${specText().replace(/</g,"&lt;")}</pre>
+    <div class="rowbtns">
+      <button class="b" type="button" id="copybtn">Copy for Carys</button>
+      <button class="b ghost" type="button" onclick="document.getElementById('locksheet').classList.remove('on')">Close</button>
+    </div>`;
+  document.getElementById("locksheet").classList.add("on");
+}
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("on");
+  setTimeout(() => t.classList.remove("on"), 1800);
+}
+
+function togglePresent(){
+  state.present = !state.present;
+  document.body.classList.toggle("present", state.present);
+  document.getElementById("presentbtn").textContent = state.present ? "Exit present" : "Present";
+  document.getElementById("presentbtn").classList.toggle("on", state.present);
+  writeHash();
+}
+
+window.closeSheets = () => {
+  document.getElementById("sitsheet").classList.remove("on");
+  document.getElementById("locksheet").classList.remove("on");
+};
+
+document.addEventListener("click", e => {
+  const step = e.target.closest("[data-step]");
+  if (step) { state.step = Number(step.dataset.step); renderUI(); return; }
+  const view = e.target.closest("[data-view]");
+  if (view) { setView(view.dataset.view); return; }
+  const pk = e.target.closest("[data-pick]");
+  if (pk) { pick(pk.dataset.pick); return; }
+  if (e.target.id === "presentbtn") togglePresent();
+  if (e.target.id === "sitbtn") document.getElementById("sitsheet").classList.add("on");
+  if (e.target.id === "lockbtn" || e.target.id === "lockbtn2") openLock();
+  if (e.target.id === "copybtn") {
+    navigator.clipboard.writeText(specText()).then(() => toast("Copied for Carys")).catch(() => toast("Copy the text from the page"));
+  }
+  if (e.target.id === "sitsheet" || e.target.id === "locksheet") e.target.classList.remove("on");
+});
+
+readHash();
+renderUI();
+try { init3d(); }
+catch (err) {
+  console.error(err);
+  document.getElementById("ptitle").textContent = "3D did not load";
+  document.getElementById("plede").textContent = "The spec panel still works. Check the network (Three.js is loaded from a CDN) and use Chrome or Safari.";
+}
+</script>
 </body>
 </html>
