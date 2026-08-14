@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deal OS — INVRT Partner workspace</title>
+  <style>
+    :root {
+      --ink: #1a1612;
+      --paper: #f4efe6;
+      --panel: #fbf7f0;
+      --line: #cbbfae;
+      --mute: #6e665c;
+      --brass: #9a7b4f;
+      --ox: #6b2b28;
+      --go: #23473a;
+      --serif: Palatino, "Palatino Linotype", "Iowan Old Style", Georgia, serif;
+      --sans: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); }
+    body { min-height: 100%; }
+    a { color: var(--ox); }
+    noscript, .warn { display: block; margin: 0; padding: 10px 18px; background: var(--ox); color: #fff; font-size: 13px; }
+    .warn { display: none; }
+    header {
+      display: flex; justify-content: space-between; gap: 16px; align-items: flex-end;
+      padding: 18px 28px 12px; border-bottom: 1px solid var(--line);
+    }
+    .mark { font-family: var(--serif); font-size: 28px; letter-spacing: 0.04em; margin: 0; }
+    .mark span { display: block; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--brass); }
+    .meta { text-align: right; font-size: 13px; color: var(--mute); }
+    .meta strong { color: var(--ink); }
+    nav.views {
+      display: flex; gap: 0; padding: 0 28px; border-bottom: 1px solid var(--line); background: var(--panel);
+      flex-wrap: wrap;
+    }
+    nav.views button {
+      background: transparent; border: 0; border-bottom: 2px solid transparent;
+      padding: 12px 14px; font: inherit; cursor: pointer; color: var(--mute);
+    }
+    nav.views button.on { color: var(--ink); border-bottom-color: var(--ink); }
+    .roles { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; margin-top: 8px; }
+    .roles button, button.cmd, .tiny {
+      font: inherit; cursor: pointer; border: 1px solid var(--line); background: #fff; border-radius: 4px; padding: 6px 10px;
+    }
+    .roles button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+    main { padding: 22px 28px 120px; max-width: 1180px; }
+    h1, h2, h3 { font-family: var(--serif); font-weight: 600; }
+    h1 { font-size: 26px; margin: 0 0 6px; }
+    h2 { font-size: 20px; margin: 0 0 10px; }
+    h3 { font-size: 16px; margin: 0 0 8px; }
+    .lede { color: var(--mute); max-width: 720px; margin-bottom: 18px; }
+    .grid { display: grid; gap: 14px; }
+    .g2 { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 900px) { .g2 { grid-template-columns: 1fr; } header, main, nav.views { padding-left: 16px; padding-right: 16px; } }
+    .card { background: var(--panel); border: 1px solid var(--line); padding: 16px; }
+    label { display: block; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); margin: 8px 0 4px; }
+    input, select, textarea {
+      width: 100%; font: inherit; padding: 8px; border: 1px solid var(--line); background: #fff; color: var(--ink);
+    }
+    textarea { min-height: 88px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
+    .pill { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--line); padding: 2px 7px; }
+    .pill.go { border-color: var(--go); color: var(--go); }
+    .pill.wait { border-color: var(--brass); color: var(--brass); }
+    .pill.dead { border-color: var(--ox); color: var(--ox); }
+    .primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .danger { background: var(--ox); color: #fff; border-color: var(--ox); }
+    .ok { background: var(--go); color: #fff; border-color: var(--go); }
+    .row { display: grid; gap: 8px; grid-template-columns: 1fr 1fr 1fr auto; align-items: end; }
+    .row4 { display: grid; gap: 8px; grid-template-columns: 1.3fr 1.5fr 0.8fr auto; align-items: end; }
+    @media (max-width: 900px) { .row, .row4 { grid-template-columns: 1fr; } }
+    .gate {
+      position: sticky; bottom: 0; background: var(--ink); color: #f4efe6;
+      padding: 12px 28px; display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap;
+    }
+    .gate .muted { color: #cbbfae; font-size: 12px; }
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(26,22,18,.45); display: none; align-items: center; justify-content: center; z-index: 40; padding: 16px;
+    }
+    .modal-bg.show { display: flex; }
+    .modal { background: var(--panel); width: min(560px, 100%); padding: 18px; border: 1px solid var(--line); }
+    .actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 10px; }
+    .toast { position: fixed; right: 16px; bottom: 72px; background: var(--ink); color: #fff; padding: 10px 14px; display: none; z-index: 50; max-width: 380px; }
+    .doc {
+      background: #fff; border: 1px solid var(--line); padding: 36px 40px; max-width: 820px;
+      font-family: var(--serif); box-shadow: 0 12px 40px rgba(26,22,18,.06);
+      position: relative;
+    }
+    .doc h1 { font-size: 22px; }
+    .doc .kicker { letter-spacing: 0.16em; text-transform: uppercase; font-size: 11px; color: var(--brass); font-family: var(--sans); }
+    .wm {
+      pointer-events: none; position: absolute; inset: 20% 8%;
+      font-size: 42px; color: rgba(107,43,40,.07); transform: rotate(-18deg);
+      font-family: var(--serif); text-align: center;
+    }
+    .hidden { display: none !important; }
+    .reason { font-size: 13px; color: var(--mute); }
+    code { font-size: 12px; }
+  </style>
+</head>
+<body onload="DealOS.init()">
+  <noscript>Download this file and open it in Chrome, Safari, Firefox, or Edge. GitHub will not run it.</noscript>
+  <div class="warn" id="githubWarn">You are on GitHub. Download <code>product/deal-os/ui/index.html</code> and open it locally — this page will not run here.</div>
+
+  <header>
+    <p class="mark">Deal OS<span>INVRT · Partner workspace</span></p>
+    <div class="meta">
+      <div><strong>Northwind Holdings</strong> · Project Harbor</div>
+      <div id="stateLine"></div>
+      <div class="roles" id="roles"></div>
+    </div>
+  </header>
+  <nav class="views" id="views"></nav>
+  <main id="main"></main>
+  <div class="gate" id="gate"></div>
+  <div class="modal-bg" id="modal">
+    <div class="modal">
+      <h2 id="modalTitle">Judgment</h2>
+      <p class="lede" id="modalCopy"></p>
+      <label>Conditions / rationale (required)</label>
+      <textarea id="rationale"></textarea>
+      <div class="actions">
+        <button type="button" class="cmd" onclick="DealOS.closeModal()">Cancel</button>
+        <button type="button" class="cmd primary" onclick="DealOS.confirmGate()">Sign</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    var DealOS = {
+      key: "invrt-deal-os-partner-ui-v1",
+      gateKind: null,
+      init: function () {
+        if (/github\.com|githubusercontent\.com/.test(location.host)) {
+          document.getElementById("githubWarn").style.display = "block";
+        }
+        this.load();
+        this.render();
+      },
+      seed: function () {
+        return {
+          role: "deal_lead",
+          view: "mandate",
+          state: "identifying",
+          mandateConfirmed: true,
+          universeIssued: false,
+          icIssued: false,
+          mandate: {
+            legal: "Northwind Holdings Ltd",
+            economic: "A. Northwind (chair, 62%)",
+            emotional: "Next generation — legitimacy of the first non-family CEO",
+            objective: "Acquire a controlling industrial adjacency that preserves family control of the holdco and can be explained to the family council without looking like financial engineering.",
+            willNot: "No auction of Northwind itself. No PE consortium. No name on a process letter without Partner sign-off.",
+            conflicts: "None. INVRT does not advise any name on the universe.",
+            success: "A control position in a culturally compatible manufacturer, inside the valuation envelope, with no surprise to counsel or the council.",
+            information: "Names stay inside INVRT until G1. Principal sees issued work product only."
+          },
+          thesis: "Value is created by putting a family-controlled manufacturer next to Northwind’s distribution — not by leverage. Falsifiers: customer overlap that creates antitrust or concentration; a seller who will not accept family governance; environmental liability that cannot be structured.",
+          valuation: { low: "8.5x", mid: "9.5x", high: "10.5x", basis: "FY26E EBITDA", model: "Harbor v3 · 12 Aug 2026" },
+          universe: [
+            { id: "u1", name: "Harbor Components", klass: "internal", reason: "Family-owned precision parts; control available; culture matches Northwind’s plant discipline.", fit: 5, control: 5, culture: 5, envelope: 4, status: "shortlisted", kill: "" },
+            { id: "u2", name: "Lumen Packaging", klass: "internal", reason: "Customer overlap with Northwind’s food-grade line; succession without a CEO.", fit: 4, control: 4, culture: 3, envelope: 3, status: "screened", kill: "" },
+            { id: "u3", name: "Nordic Cold Chain", klass: "internal", reason: "Logistics, not manufacturing — outside thesis.", fit: 2, control: 3, culture: 3, envelope: 3, status: "passed", kill: "Thesis" },
+            { id: "u4", name: "Atlas Fasteners", klass: "restricted", reason: "Subscale; would look opportunistic to the council.", fit: 2, control: 5, culture: 4, envelope: 2, status: "passed", kill: "Scale" }
+          ],
+          issues: [
+            { id: "i1", title: "Top customer 34% of revenue", materiality: "value", impact: "1.0–1.5x turn if contract is annual and unassigned", close: "Assignment + 24-month volume side letter, or price.", owner: "J. Rao", status: "testing" },
+            { id: "i2", title: "Plant permit renewal 2027", materiality: "structure", impact: "Indemnity / escrow vs walk if regulator signals refusal", close: "Counsel note from seller’s environmental advisor.", owner: "Counsel", status: "open" },
+            { id: "i3", title: "Working capital at close", materiality: "value", impact: "Locked-box vs completion accounts; ~€4–6m swing", close: "QoE bridge signed by accountant.", owner: "QoE", status: "open" },
+            { id: "i4", title: "Site visit logistics", materiality: "", impact: "Does not change bid.", close: "Schedule visit.", owner: "M. Quinn", status: "open" }
+          ],
+          stakeholders: [
+            { name: "A. Northwind", role: "Economic buyer / veto", note: "Must see Sunday pack before any seller contact." },
+            { name: "C. Northwind", role: "Next-gen; consult", note: "Will test cultural fit. Do not surprise." },
+            { name: "Holdco counsel", role: "Veto on structure", note: "Sees issued IC only." }
+          ],
+          advisors: [
+            { seat: "Counsel", firm: "Family counsel (named at G1)" },
+            { seat: "Tax", firm: "Holdco tax — estate overlay" },
+            { seat: "QoE", firm: "Not appointed until G1" }
+          ],
+          register: [
+            { what: "Mandate memo v1", to: "A. Northwind", klass: "principal", at: "Seed" }
+          ],
+          conditions: "",
+          audit: [{ at: "Seed", event: "Mandate confirmed", actor: "A. Voss (Partner)", note: "G0 offline with principal" }]
+        };
+      },
+      load: function () {
+        try {
+          var raw = localStorage.getItem(this.key);
+          this.s = raw ? JSON.parse(raw) : this.seed();
+        } catch (e) { this.s = this.seed(); }
+        if (!this.s.universe) this.s = this.seed();
+      },
+      save: function () { localStorage.setItem(this.key, JSON.stringify(this.s)); },
+      actor: function () {
+        return ({ deal_lead: "M. Quinn (Lead)", associate: "J. Rao (Associate)", partner: "A. Voss (Partner)", principal: "A. Northwind (Principal)" })[this.s.role] || this.s.role;
+      },
+      canWrite: function () { return this.s.role === "deal_lead" || this.s.role === "associate"; },
+      isPartner: function () { return this.s.role === "partner"; },
+      isPrincipal: function () { return this.s.role === "principal"; },
+      toast: function (m) {
+        var el = document.getElementById("toast");
+        el.textContent = m;
+        el.style.display = "block";
+        clearTimeout(this._t);
+        this._t = setTimeout(function () { el.style.display = "none"; }, 3400);
+      },
+      log: function (event, note) {
+        this.s.audit.unshift({ at: new Date().toLocaleString(), event: event, actor: this.actor(), note: note || "" });
+      },
+      esc: function (x) {
+        return String(x == null ? "" : x).replace(/[&<>"']/g, function (c) {
+          return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+        });
+      },
+      setRole: function (r) { this.s.role = r; if (r === "principal") this.s.view = "sunday"; this.save(); this.render(); this.toast("Acting as " + this.actor()); },
+      setView: function (v) { this.s.view = v; this.save(); this.render(); },
+      reset: function () { this.s = this.seed(); this.save(); this.render(); this.toast("Sample mandate restored."); },
+      field: function (obj, key, el) {
+        if (!this.canWrite() && !this.isPartner()) { this.toast("Read-only in this role."); return; }
+        this.s[obj][key] = document.getElementById(el).value;
+        this.save();
+        this.toast("Saved.");
+      },
+      saveThesis: function () {
+        if (!this.canWrite() && !this.isPartner()) return this.toast("Read-only.");
+        this.s.thesis = document.getElementById("thesis").value;
+        this.save(); this.toast("Thesis saved.");
+      },
+      addUniverse: function () {
+        if (!this.canWrite()) return this.toast("Lead or Associate adds names.");
+        var name = (document.getElementById("uName").value || "").trim();
+        var reason = (document.getElementById("uReason").value || "").trim();
+        if (!name) return this.toast("Name required.");
+        if (!reason) return this.toast("Every name needs a reason a principal could defend.");
+        this.s.universe.push({ id: "u" + Date.now(), name: name, klass: "internal", reason: reason, fit: 3, control: 3, culture: 3, envelope: 3, status: "sourced", kill: "" });
+        this.log("UniverseEntry sourced", name);
+        this.save(); this.render();
+      },
+      setUStatus: function (id, status) {
+        if (!this.canWrite()) return this.toast("Lead or Associate moves the universe.");
+        var u = this.s.universe.filter(function (x) { return x.id === id; })[0];
+        if (!u) return;
+        if (status === "shortlisted" && !(u.reason || "").trim()) return this.toast("G1 standard: no shortlist without a reason.");
+        u.status = status;
+        this.log("Universe " + status, u.name);
+        this.save(); this.render();
+      },
+      addIssue: function () {
+        if (!this.canWrite()) return this.toast("Lead or Associate adds issues.");
+        var title = (document.getElementById("iTitle").value || "").trim();
+        var mat = document.getElementById("iMat").value;
+        var impact = (document.getElementById("iImpact").value || "").trim();
+        if (!title) return this.toast("Issue title required.");
+        if (mat && !impact) return this.toast("Material issues must state value, structure, or walk impact.");
+        this.s.issues.push({ id: "i" + Date.now(), title: title, materiality: mat, impact: impact, close: "", owner: this.actor(), status: "open" });
+        this.log("Issue opened", title);
+        this.save(); this.render();
+      },
+      setIssueStatus: function (id, status) {
+        if (!this.canWrite()) return this.toast("Lead or Associate updates issues.");
+        var i = this.s.issues.filter(function (x) { return x.id === id; })[0];
+        if (!i) return;
+        if ((status === "testing" || status === "material") && !i.materiality) {
+          return this.toast("Cannot elevate: pick value / structure / walk. Site logistics are not an IC issue.");
+        }
+        i.status = status;
+        this.log("Issue " + status, i.title);
+        this.save(); this.render();
+      },
+      addRegister: function () {
+        if (!this.canWrite() && !this.isPartner()) return this.toast("Only the firm logs outbound.");
+        var what = (document.getElementById("rWhat").value || "").trim();
+        var to = (document.getElementById("rTo").value || "").trim();
+        if (!what || !to) return this.toast("What and to whom are required.");
+        this.s.register.unshift({ what: what, to: to, klass: document.getElementById("rKlass").value, at: new Date().toLocaleString() });
+        this.log("MaterialsRegister", what + " → " + to);
+        this.save(); this.render();
+        this.toast("Logged. Nothing leaves without a line.");
+      },
+      shortlisted: function () { return this.s.universe.filter(function (u) { return u.status === "shortlisted"; }); },
+      materialIssues: function () {
+        return this.s.issues.filter(function (i) { return i.materiality === "value" || i.materiality === "structure" || i.materiality === "walk"; });
+      },
+      thinUniverse: function () {
+        return this.shortlisted().filter(function (u) { return !(u.reason || "").trim(); });
+      },
+      unpriced: function () {
+        return this.materialIssues().filter(function (i) { return i.status === "open" || i.status === "testing"; });
+      },
+      issueUniverse: function () {
+        if (!this.canWrite() && !this.isPartner()) return this.toast("Not allowed.");
+        if (!this.shortlisted().length) return this.toast("Universe book needs at least one shortlisted name.");
+        if (this.thinUniverse().length) return this.toast("Refuse: a shortlisted name has no reason.");
+        this.s.universeIssued = true;
+        this.s.state = "awaiting_g1";
+        this.log("UniverseBookIssued", this.shortlisted().length + " names");
+        this.save(); this.render();
+        this.toast("Universe book issued. Partner must sign G1.");
+      },
+      issueIc: function () {
+        if (!this.canWrite() && !this.isPartner()) return this.toast("Not allowed.");
+        if (this.s.state !== "evaluating") return this.toast("IC after G1.");
+        if (this.unpriced().length) return this.toast("Refuse: material issues still open/testing. Price them or waive with Partner.");
+        this.s.icIssued = true;
+        this.s.state = "awaiting_g2";
+        this.log("IcMemoIssued", "Sunday pack ready");
+        this.save(); this.render();
+        this.toast("IC memo issued. Partner must sign G2.");
+      },
+      openGate: function (kind) {
+        if (kind === "g0" || kind === "g1" || kind === "g1r" || kind === "g2go" || kind === "g2re" || kind === "g2walk") {
+          if (!this.isPartner()) return this.toast("Partner signs this judgment. Switch role.");
+        }
+        this.gateKind = kind;
+        var t = {
+          g0: "G0 · Confirm mandate",
+          g1: "G1 · Permission to spend diligence capital",
+          g1r: "G1 · Return the universe",
+          g2go: "G2 · Go — with conditions",
+          g2re: "G2 · Rework issues",
+          g2walk: "G2 · Walk"
+        };
+        document.getElementById("modalTitle").textContent = t[kind];
+        document.getElementById("modalCopy").textContent = "A gate is a signed judgment. Conditions are the product.";
+        document.getElementById("rationale").value = this.s.conditions || "";
+        document.getElementById("modal").className = "modal-bg show";
+      },
+      closeModal: function () { document.getElementById("modal").className = "modal-bg"; this.gateKind = null; },
+      confirmGate: function () {
+        var note = (document.getElementById("rationale").value || "").trim();
+        if (!note) return this.toast("Conditions / rationale required.");
+        var k = this.gateKind;
+        if (k === "g0") { this.s.mandateConfirmed = true; this.s.state = "identifying"; this.log("MandateConfirmed", note); }
+        if (k === "g1") {
+          if (!this.s.universeIssued) return this.toast("Issue the universe book first.");
+          this.s.state = "evaluating"; this.s.conditions = note; this.log("PermissionToDiligence", note);
+          this.s.register.unshift({ what: "Universe book v1", to: "Holdco counsel", klass: "counsel", at: new Date().toLocaleString() });
+        }
+        if (k === "g1r") { this.s.state = "identifying"; this.s.universeIssued = false; this.log("ReworkUniverse", note); }
+        if (k === "g2go") {
+          if (!this.s.icIssued) return this.toast("Issue the IC memo first.");
+          this.s.state = "negotiating"; this.s.conditions = note; this.log("GoWithConditions", note);
+          this.s.register.unshift({ what: "IC memo / Sunday pack", to: "A. Northwind", klass: "principal", at: new Date().toLocaleString() });
+        }
+        if (k === "g2re") { this.s.state = "evaluating"; this.s.icIssued = false; this.log("ReworkIssues", note); }
+        if (k === "g2walk") { this.s.state = "killed"; this.log("Walk", note); }
+        this.closeModal(); this.save(); this.render();
+      },
+      render: function () {
+        var s = this.s;
+        document.getElementById("stateLine").innerHTML = "State <span class='pill " +
+          (s.state === "killed" ? "dead" : s.state.indexOf("awaiting") === 0 ? "wait" : "go") + "'>" + this.esc(s.state) + "</span>";
+        var roles = [["deal_lead", "Deal Lead"], ["associate", "Associate"], ["partner", "Partner"], ["principal", "Principal (briefing)"]];
+        document.getElementById("roles").innerHTML = roles.map(function (r) {
+          return '<button type="button" class="' + (s.role === r[0] ? "on" : "") + '" onclick="DealOS.setRole(\'' + r[0] + '\')">' + r[1] + "</button>";
+        }).join("") + '<button type="button" onclick="DealOS.reset()">Reset sample</button>';
+        var views = this.isPrincipal()
+          ? [["sunday", "Sunday pack"], ["register", "What you received"]]
+          : [["mandate", "Mandate"], ["universe", "Universe"], ["issues", "Issues"], ["ic", "IC memo"], ["register", "Materials register"], ["sunday", "Sunday pack"]];
+        if (this.isPrincipal() && views.every(function (v) { return v[0] !== s.view; })) s.view = "sunday";
+        document.getElementById("views").innerHTML = views.map(function (v) {
+          return '<button type="button" class="' + (s.view === v[0] ? "on" : "") + '" onclick="DealOS.setView(\'' + v[0] + '\')">' + v[1] + "</button>";
+        }).join("");
+        var html = "";
+        if (s.view === "mandate") html = this.mandateHtml();
+        else if (s.view === "universe") html = this.universeHtml();
+        else if (s.view === "issues") html = this.issuesHtml();
+        else if (s.view === "ic") html = this.icHtml();
+        else if (s.view === "register") html = this.regHtml();
+        else html = this.sundayHtml();
+        document.getElementById("main").innerHTML = html;
+        document.getElementById("gate").innerHTML = this.gateHtml();
+      },
+      mandateHtml: function () {
+        var m = this.s.mandate;
+        return "<h1>Mandate</h1><p class='lede'>No universe exists without this. G0 is confirmation, not a kickoff slide.</p>" +
+          "<div class='grid g2'><div class='card'><label>Legal client</label><input id='mLegal' value='" + this.esc(m.legal) + "'>" +
+          "<label>Economic buyer</label><input id='mEcon' value='" + this.esc(m.economic) + "'>" +
+          "<label>Emotional buyer</label><input id='mEmo' value='" + this.esc(m.emotional) + "'>" +
+          "<p><button type='button' class='cmd primary' onclick=\"DealOS.field('mandate','legal','mLegal');DealOS.field('mandate','economic','mEcon');DealOS.field('mandate','emotional','mEmo')\">Save parties</button></p></div>" +
+          "<div class='card'><label>Objective</label><textarea id='mObj'>" + this.esc(m.objective) + "</textarea>" +
+          "<label>What we will not do</label><textarea id='mNot'>" + this.esc(m.willNot) + "</textarea>" +
+          "<p><button type='button' class='cmd primary' onclick=\"DealOS.field('mandate','objective','mObj');DealOS.field('mandate','willNot','mNot')\">Save purpose</button></p></div></div>" +
+          "<div class='card' style='margin-top:14px'><label>Thesis and falsifiers</label><textarea id='thesis'>" + this.esc(this.s.thesis) + "</textarea>" +
+          "<p><button type='button' class='cmd primary' onclick='DealOS.saveThesis()'>Save thesis</button></p>" +
+          "<h3>Stakeholders</h3><table><thead><tr><th>Name</th><th>Role</th><th>Note</th></tr></thead><tbody>" +
+          this.s.stakeholders.map(function (st) {
+            return "<tr><td>" + DealOS.esc(st.name) + "</td><td>" + DealOS.esc(st.role) + "</td><td class='reason'>" + DealOS.esc(st.note) + "</td></tr>";
+          }).join("") + "</tbody></table></div>";
+      },
+      universeHtml: function () {
+        var rows = this.s.universe.map(function (u) {
+          return "<tr><td><strong>" + DealOS.esc(u.name) + "</strong><div class='reason'>" + DealOS.esc(u.reason) + "</div></td>" +
+            "<td>" + u.fit + "/" + u.control + "/" + u.culture + "/" + u.envelope + "</td>" +
+            "<td><code>" + DealOS.esc(u.status) + "</code><div class='reason'>" + DealOS.esc(u.kill) + "</div></td>" +
+            "<td><button type='button' class='tiny' onclick=\"DealOS.setUStatus('" + u.id + "','screened')\">Screen</button>" +
+            "<button type='button' class='tiny' onclick=\"DealOS.setUStatus('" + u.id + "','shortlisted')\">Shortlist</button>" +
+            "<button type='button' class='tiny' onclick=\"DealOS.setUStatus('" + u.id + "','passed')\">Pass</button></td></tr>";
+        }).join("");
+        return "<h1>Universe</h1><p class='lede'>If a principal asks why a name is here, the reason is the product. Score: fit / control / culture / envelope.</p>" +
+          "<div class='card'><table><thead><tr><th>Name · reason</th><th>Score</th><th>Status</th><th></th></tr></thead><tbody>" + rows + "</tbody></table></div>" +
+          "<div class='card'><h3>Add a name</h3><div class='row4'><div><label>Company</label><input id='uName'></div>" +
+          "<div><label>Reason (required)</label><input id='uReason' placeholder='One sentence a patriarch would accept'></div>" +
+          "<div></div><button type='button' class='cmd primary' onclick='DealOS.addUniverse()'>Add to universe</button></div></div>";
+      },
+      issuesHtml: function () {
+        var rows = this.s.issues.map(function (i) {
+          var mat = i.materiality ? i.materiality : "not material";
+          return "<tr><td><strong>" + DealOS.esc(i.title) + "</strong><div class='reason'>" + DealOS.esc(i.impact) + "</div></td>" +
+            "<td>" + DealOS.esc(mat) + "</td><td>" + DealOS.esc(i.owner) + "</td><td><code>" + DealOS.esc(i.status) + "</code></td><td>" +
+            "<button type='button' class='tiny' onclick=\"DealOS.setIssueStatus('" + i.id + "','testing')\">Testing</button>" +
+            "<button type='button' class='tiny' onclick=\"DealOS.setIssueStatus('" + i.id + "','material')\">Material</button>" +
+            "<button type='button' class='tiny' onclick=\"DealOS.setIssueStatus('" + i.id + "','priced')\">Priced</button>" +
+            "<button type='button' class='tiny' onclick=\"DealOS.setIssueStatus('" + i.id + "','closed')\">Closed</button></td></tr>";
+        }).join("");
+        return "<h1>Issues that bite</h1><p class='lede'>If it cannot change value, structure, or walk, it is not an IC issue. Site visits are logistics.</p>" +
+          "<div class='card'><table><thead><tr><th>Issue</th><th>Materiality</th><th>Owner</th><th>Status</th><th></th></tr></thead><tbody>" + rows + "</tbody></table></div>" +
+          "<div class='card'><h3>Open issue</h3><div class='row'><div><label>Title</label><input id='iTitle'></div>" +
+          "<div><label>Materiality</label><select id='iMat'><option value=''>Not material</option><option value='value'>Value</option><option value='structure'>Structure</option><option value='walk'>Walk</option></select></div>" +
+          "<div><label>Impact</label><input id='iImpact' placeholder='Turns, euros, or walk condition'></div>" +
+          "<button type='button' class='cmd primary' onclick='DealOS.addIssue()'>Add issue</button></div></div>";
+      },
+      icHtml: function () {
+        var v = this.s.valuation;
+        var rec = this.s.state === "negotiating" ? "Go, with conditions already signed." : "Draft — Partner has not signed G2.";
+        return "<h1>IC memo</h1><p class='lede'>The system’s job is to make this document inevitable. Boolean go/no-go is junior.</p>" +
+          "<div class='card'><p><strong>Recommendation.</strong> " + rec + "</p>" +
+          "<p><strong>Valuation envelope.</strong> " + this.esc(v.low) + "–" + this.esc(v.high) + " " + this.esc(v.basis) + " · " + this.esc(v.model) + "</p>" +
+          "<p><strong>Shortlist.</strong></p><ul>" + this.shortlisted().map(function (u) {
+            return "<li>" + DealOS.esc(u.name) + " — " + DealOS.esc(u.reason) + "</li>";
+          }).join("") + "</ul>" +
+          "<p><strong>Issues that change the bid.</strong></p><ul>" + this.materialIssues().map(function (i) {
+            return "<li>" + DealOS.esc(i.title) + " (" + DealOS.esc(i.materiality) + ") — " + DealOS.esc(i.impact) + "</li>";
+          }).join("") + "</ul>" +
+          "<p><strong>Conditions on last signature.</strong> " + this.esc(this.s.conditions || "None yet.") + "</p></div>";
+      },
+      regHtml: function () {
+        var rows = this.s.register.map(function (r) {
+          return "<tr><td>" + DealOS.esc(r.at) + "</td><td>" + DealOS.esc(r.what) + "</td><td>" + DealOS.esc(r.to) + "</td><td>" + DealOS.esc(r.klass) + "</td></tr>";
+        }).join("");
+        var form = this.isPrincipal() ? "" : "<div class='card'><h3>Log outbound</h3><div class='row4'><div><label>What left</label><input id='rWhat' placeholder='Universe extract'></div>" +
+          "<div><label>To whom</label><input id='rTo' placeholder='Holdco counsel'></div>" +
+          "<div><label>Class</label><select id='rKlass'><option value='internal'>internal</option><option value='counsel'>counsel</option><option value='principal'>principal</option></select></div>" +
+          "<button type='button' class='cmd primary' onclick='DealOS.addRegister()'>Log</button></div></div>";
+        return "<h1>Materials register</h1><p class='lede'>Discretion is a log. If it is not on this list, it did not leave INVRT.</p>" +
+          "<div class='card'><table><thead><tr><th>When</th><th>What</th><th>To</th><th>Class</th></tr></thead><tbody>" + rows + "</tbody></table></div>" + form;
+      },
+      sundayHtml: function () {
+        var m = this.s.mandate, v = this.s.valuation;
+        var wm = this.isPrincipal() ? "<div class='wm'>CONFIDENTIAL · Northwind · counsel copy</div>" : "";
+        return "<h1>Sunday pack</h1><p class='lede'>What a principal should receive. Not two hundred pages. Not a login with tasks.</p>" +
+          "<div class='doc'>" + wm +
+          "<p class='kicker'>INVRT · Deal OS · issued work product</p>" +
+          "<h1>Project Harbor — family council note</h1>" +
+          "<p>For " + this.esc(m.economic) + ". Prepared for a single sitting.</p>" +
+          "<h2>1. Mandate</h2><p>" + this.esc(m.objective) + "</p>" +
+          "<p><em>We will not:</em> " + this.esc(m.willNot) + "</p>" +
+          "<h2>2. Thesis</h2><p>" + this.esc(this.s.thesis) + "</p>" +
+          "<h2>3. Universe (shortlist)</h2><ul>" + this.shortlisted().map(function (u) {
+            return "<li><strong>" + DealOS.esc(u.name) + "</strong> — " + DealOS.esc(u.reason) + "</li>";
+          }).join("") + "</ul>" +
+          "<h2>4. Issues that matter</h2><ul>" + this.materialIssues().map(function (i) {
+            return "<li><strong>" + DealOS.esc(i.title) + "</strong> (" + DealOS.esc(i.materiality) + "). " + DealOS.esc(i.impact) + "</li>";
+          }).join("") + "</ul>" +
+          "<h2>5. Valuation envelope</h2><p>" + this.esc(v.low) + " to " + this.esc(v.high) + " " + this.esc(v.basis) + ". Model " + this.esc(v.model) + ".</p>" +
+          "<h2>6. Decision asked</h2><p>State: <strong>" + this.esc(this.s.state) + "</strong>. Conditions: " + this.esc(this.s.conditions || "Partner has not yet signed G2.") + "</p>" +
+          "<p class='reason'>Need-to-know. Not for forwarding. Views of issued packs are a materials-register event in the live system.</p></div>";
+      },
+      gateHtml: function () {
+        var s = this.s;
+        var bits = ["<div><strong>Signed judgments</strong><div class='muted'>Work product before motion. Partner name on the page.</div></div><div class='actions'>"];
+        if (!this.isPrincipal()) {
+          if (!s.mandateConfirmed) bits.push("<button type='button' class='cmd ok' onclick=\"DealOS.openGate('g0')\">G0 Confirm mandate</button>");
+          if (s.state === "identifying") bits.push("<button type='button' class='cmd ok' onclick='DealOS.issueUniverse()'>Issue universe book</button>");
+          if (s.state === "awaiting_g1") {
+            bits.push("<button type='button' class='cmd ok' onclick=\"DealOS.openGate('g1')\">Partner G1 — permit diligence</button>");
+            bits.push("<button type='button' class='cmd' onclick=\"DealOS.openGate('g1r')\">Partner — return universe</button>");
+          }
+          if (s.state === "evaluating") bits.push("<button type='button' class='cmd ok' onclick='DealOS.issueIc()'>Issue IC memo</button>");
+          if (s.state === "awaiting_g2") {
+            bits.push("<button type='button' class='cmd ok' onclick=\"DealOS.openGate('g2go')\">Partner G2 — go with conditions</button>");
+            bits.push("<button type='button' class='cmd' onclick=\"DealOS.openGate('g2re')\">Rework</button>");
+            bits.push("<button type='button' class='cmd danger' onclick=\"DealOS.openGate('g2walk')\">Walk</button>");
+          }
+        }
+        bits.push("</div>");
+        return bits.join("");
+      }
+    };
+  </script>
+</body>
+</html>
